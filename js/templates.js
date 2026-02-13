@@ -5,10 +5,52 @@
 const Templates = (() => {
   const e = Utils.escapeHtml;
 
+  // デフォルト行数設定
+  const DEFAULT_OPTIONS = {
+    advancedMode: false,
+    page1HistoryRows: 18,
+    page2HistoryRows: 5,
+    qualificationRows: 6,
+  };
+
+  // ================================================================
+  // ユーティリティ
+  // ================================================================
+  function buildHistoryRows(educationList) {
+    const eduItems = educationList.filter((x) => x.type === '学歴');
+    const workItems = educationList.filter((x) => x.type === '職歴');
+    const rows = [];
+    rows.push({ year: '', month: '', content: '学歴', isHeader: true });
+    for (const item of eduItems) {
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      rows.push({ year: item.year || '', month: monthStr, content: item.content });
+    }
+    rows.push({ year: '', month: '', content: '', isSeparator: true });
+    rows.push({ year: '', month: '', content: '職歴', isHeader: true });
+    for (const item of workItems) {
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      rows.push({ year: item.year || '', month: monthStr, content: item.content });
+    }
+    return rows;
+  }
+
+  function historyRowHtml(r) {
+    return `<tr>
+          <td class="center">${e(String(r.year || ''))}</td>
+          <td class="center">${e(String(r.month || ''))}</td>
+          <td class="${r.isHeader ? 'center bold' : ''}">${e(r.content)}</td>
+        </tr>`;
+  }
+
+  function emptyRowHtml() {
+    return '<tr><td>&nbsp;</td><td></td><td></td></tr>';
+  }
+
   // ================================================================
   // 履歴書 ページ1
   // ================================================================
-  function resumePage1(profile, educationList, submissionDate) {
+  function resumePage1(profile, educationList, submissionDate, options) {
+    const opt = { ...DEFAULT_OPTIONS, ...options };
     const age = Utils.calcAge(profile.birthDate, submissionDate);
     const dateLabel = Utils.formatDateJP(submissionDate) + '現在';
     const birthLabel = profile.birthDate
@@ -18,30 +60,9 @@ const Templates = (() => {
         })()
       : '';
 
-    // 学歴・職歴を結合して表示行を生成
-    const eduItems = educationList.filter((x) => x.type === '学歴');
-    const workItems = educationList.filter((x) => x.type === '職歴');
-    const historyRows = [];
-
-    // 学歴見出し
-    historyRows.push({ year: '', month: '', content: '学歴', isHeader: true });
-    for (const item of eduItems) {
-      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
-      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
-    }
-    // 空行（学歴・職歴間の区切り）
-    historyRows.push({ year: '', month: '', content: '', isSeparator: true });
-    // 職歴見出し
-    historyRows.push({ year: '', month: '', content: '職歴', isHeader: true });
-    for (const item of workItems) {
-      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
-      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
-    }
-
-    // ページ1に収める行数（残りはページ2へ）
-    const maxRows = 18;
+    const historyRows = buildHistoryRows(educationList);
+    const maxRows = opt.page1HistoryRows;
     const page1Rows = historyRows.slice(0, maxRows);
-    const remainingRows = historyRows.slice(maxRows);
 
     const photoEnabled = profile.photoEnabled !== false;
     const photoHtml = (profile.photo && photoEnabled)
@@ -50,37 +71,41 @@ const Templates = (() => {
 
     return `
 <div class="a4-page resume-page" id="resume-page1">
-  <div class="resume-header">
-    <h1 class="resume-title">履歴書</h1>
-    <span class="resume-date">${e(dateLabel)}</span>
+  <div class="resume-top-area">
+    <div class="resume-top-content">
+      <div class="resume-header-row">
+        <h1 class="resume-title">履歴書</h1>
+        <span class="resume-date">${e(dateLabel)}</span>
+      </div>
+
+      <table class="resume-name-table">
+        <tr>
+          <td class="label-cell" style="width:60px;">
+            <span class="furigana-label">ふりがな</span><br>氏名
+          </td>
+          <td class="name-cell">
+            <span class="furigana">${e(profile.nameKana)}</span><br>
+            <span class="name-value">${e(profile.name)}</span>
+          </td>
+          <td class="gender-cell">
+            <span class="gender-note">※性別</span><br>
+            ${e(profile.gender || '')}
+          </td>
+        </tr>
+      </table>
+
+      <table class="resume-birth-table">
+        <tr>
+          <td class="birth-cell">${e(birthLabel)}</td>
+        </tr>
+      </table>
+    </div>
     <div class="photo-box">${photoHtml}</div>
   </div>
 
-  <table class="resume-info-table">
-    <tr>
-      <td class="label-cell" rowspan="2" style="width:70px;">
-        <span class="furigana-label">ふりがな</span><br>氏名
-      </td>
-      <td class="name-cell" rowspan="2">
-        <span class="furigana">${e(profile.nameKana)}</span><br>
-        <span class="name-value">${e(profile.name)}</span>
-      </td>
-      <td class="gender-cell" rowspan="2">
-        <span class="gender-note">※性別</span><br>
-        ${e(profile.gender || '')}
-      </td>
-    </tr>
-  </table>
-
-  <table class="resume-info-table">
-    <tr>
-      <td colspan="2" class="birth-cell">${e(birthLabel)}</td>
-    </tr>
-  </table>
-
   <table class="resume-info-table address-table">
     <tr>
-      <td class="label-cell" style="width:70px;">
+      <td class="label-cell" style="width:60px;">
         <span class="furigana-label">ふりがな</span><br>現住所
       </td>
       <td class="address-cell">
@@ -119,19 +144,8 @@ const Templates = (() => {
       </tr>
     </thead>
     <tbody>
-      ${page1Rows
-        .map(
-          (r) => `
-        <tr>
-          <td class="center">${e(String(r.year || ''))}</td>
-          <td class="center">${e(String(r.month || ''))}</td>
-          <td class="${r.isHeader ? 'center bold' : ''}">${e(r.content)}</td>
-        </tr>`
-        )
-        .join('')}
-      ${Array(Math.max(0, maxRows - page1Rows.length))
-        .fill('<tr><td>&nbsp;</td><td></td><td></td></tr>')
-        .join('')}
+      ${page1Rows.map(historyRowHtml).join('')}
+      ${Array(Math.max(0, maxRows - page1Rows.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
 </div>`;
@@ -140,28 +154,19 @@ const Templates = (() => {
   // ================================================================
   // 履歴書 ページ2
   // ================================================================
-  function resumePage2(profile, educationList, qualifications, application) {
-    // ページ1で溢れた学歴・職歴行
-    const eduItems = educationList.filter((x) => x.type === '学歴');
-    const workItems = educationList.filter((x) => x.type === '職歴');
-    const historyRows = [];
-    historyRows.push({ year: '', month: '', content: '学歴', isHeader: true });
-    for (const item of eduItems) {
-      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
-      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
-    }
-    historyRows.push({ year: '', month: '', content: '', isSeparator: true });
-    historyRows.push({ year: '', month: '', content: '職歴', isHeader: true });
-    for (const item of workItems) {
-      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
-      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
-    }
+  function resumePage2(profile, educationList, qualifications, application, options) {
+    const opt = { ...DEFAULT_OPTIONS, ...options };
 
-    const maxPage1 = 18;
+    const historyRows = buildHistoryRows(educationList);
+    const maxPage1 = opt.page1HistoryRows;
     const remainingRows = historyRows.slice(maxPage1);
-    const emptyHistoryCount = 5;
+    const page2HistorySlots = opt.advancedMode
+      ? opt.page2HistoryRows
+      : Math.max(remainingRows.length, opt.page2HistoryRows);
+    const qualSlots = opt.advancedMode
+      ? opt.qualificationRows
+      : Math.max(qualifications.length, opt.qualificationRows);
 
-    // 志望動機・自己PR
     const motivationText = application?.motivation || '';
     const selfPRText = application?.selfPR || '';
     const personalRequest = application?.personalRequest || '勤務形態・条件等については貴社の規定に従います。';
@@ -177,19 +182,8 @@ const Templates = (() => {
       </tr>
     </thead>
     <tbody>
-      ${remainingRows
-        .map(
-          (r) => `
-        <tr>
-          <td class="center">${e(String(r.year || ''))}</td>
-          <td class="center">${e(String(r.month || ''))}</td>
-          <td class="${r.isHeader ? 'center bold' : ''}">${e(r.content)}</td>
-        </tr>`
-        )
-        .join('')}
-      ${Array(Math.max(0, emptyHistoryCount - remainingRows.length))
-        .fill('<tr><td>&nbsp;</td><td></td><td></td></tr>')
-        .join('')}
+      ${remainingRows.map(historyRowHtml).join('')}
+      ${Array(Math.max(0, page2HistorySlots - remainingRows.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
 
@@ -202,22 +196,15 @@ const Templates = (() => {
       </tr>
     </thead>
     <tbody>
-      ${qualifications
-        .map(
-          (q) => {
-            const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
-            return `
-        <tr>
+      ${qualifications.map((q) => {
+        const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
+        return `<tr>
           <td class="center">${q.year || ''}</td>
           <td class="center">${monthStr}</td>
           <td>${e(q.content)}</td>
         </tr>`;
-          }
-        )
-        .join('')}
-      ${Array(Math.max(0, 6 - qualifications.length))
-        .fill('<tr><td>&nbsp;</td><td></td><td></td></tr>')
-        .join('')}
+      }).join('')}
+      ${Array(Math.max(0, qualSlots - qualifications.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
 
@@ -243,25 +230,23 @@ const Templates = (() => {
   // ================================================================
   // 職務経歴書 ページ1
   // ================================================================
-  function careerPage1(profile, careers, application, submissionDate, totalPages) {
+  function careerPage1(profile, careers, application, submissionDate) {
     const dateLabel = Utils.formatDateJPCompact(submissionDate) + '現在';
     const careerSummary = application?.careerSummary || '';
 
-    // 職務経歴ブロック生成
     let careerBlocks = '';
     for (const c of careers) {
       const startLabel = Utils.formatYearMonth(c.startDate);
       const endLabel = c.endDate === '現在' ? '現在' : Utils.formatYearMonth(c.endDate);
       const periodHeader = `${startLabel}～${endLabel}　　${c.companyName}`;
 
-      // 派遣の場合
       let dispatchLine = '';
       if (c.dispatchTo) {
         dispatchLine = `<div class="career-dispatch">派遣先：${e(c.dispatchTo)}／ 派遣元：${e(c.dispatchFrom || c.companyName)}</div>`;
       }
 
-      const dutiesList = (c.duties || []).map((d) => `<li>${e(d)}</li>`).join('');
-      const achievementsList = (c.achievements || []).map((a) => `<li>${e(a)}</li>`).join('');
+      const dutiesList = (c.duties || []).filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
+      const achievementsList = (c.achievements || []).filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
 
       careerBlocks += `
       <div class="career-block">
@@ -306,18 +291,15 @@ const Templates = (() => {
     <h2 class="career-section-title">■職務経歴</h2>
     ${careerBlocks}
   </div>
-
-  <div class="page-number">1 / ${totalPages}</div>
 </div>`;
   }
 
   // ================================================================
   // 職務経歴書 ページ2
   // ================================================================
-  function careerPage2(qualifications, application, totalPages) {
+  function careerPage2(qualifications, application) {
     const skills = application?.skills || [];
     const careerMotivation = application?.careerMotivation || '';
-
     const circledNumbers = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
 
     const skillsHtml = skills
@@ -337,74 +319,72 @@ const Templates = (() => {
     <h2 class="career-section-title">■資格</h2>
     <table class="qual-table">
       <tbody>
-        ${qualifications
-          .map(
-            (q) => {
-              const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
-              return `
-          <tr>
+        ${qualifications.map((q) => {
+          const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
+          return `<tr>
             <td class="qual-name">${e(q.content)}</td>
             <td class="qual-date">${q.year || ''}年${monthStr}月 ${q.content.includes('修了') ? '修了' : '取得'}</td>
           </tr>`;
-            }
-          )
-          .join('')}
+        }).join('')}
       </tbody>
     </table>
   </div>
 
-  ${
-    skills.length > 0
-      ? `
+  ${skills.length > 0 ? `
   <div class="career-section">
     <h2 class="career-section-title">■ 活かせるスキル・強み</h2>
     ${skillsHtml}
-  </div>`
-      : ''
-  }
+  </div>` : ''}
 
-  ${
-    careerMotivation
-      ? `
+  ${careerMotivation ? `
   <div class="career-section">
     <h2 class="career-section-title">■ 志望動機</h2>
     <div class="career-motivation-text">${e(careerMotivation).replace(/\n/g, '<br>')}</div>
-  </div>`
-      : ''
-  }
+  </div>` : ''}
 
   <div class="career-end">以上</div>
-  <div class="page-number">2 / ${totalPages}</div>
 </div>`;
+  }
+
+  // ================================================================
+  // 溢れチェック（アドバンストモード用）
+  // ================================================================
+  function checkOverflow(educationList, qualifications, options) {
+    const opt = { ...DEFAULT_OPTIONS, ...options };
+    const historyRows = buildHistoryRows(educationList);
+    const warnings = [];
+
+    if (historyRows.length > opt.page1HistoryRows + opt.page2HistoryRows) {
+      warnings.push(`学歴・職歴が ${historyRows.length} 行あり、設定上限 ${opt.page1HistoryRows + opt.page2HistoryRows} 行を超えています。`);
+    }
+    if (qualifications.length > opt.qualificationRows) {
+      warnings.push(`資格が ${qualifications.length} 件あり、設定上限 ${opt.qualificationRows} 件を超えています。`);
+    }
+    return warnings;
   }
 
   // ================================================================
   // 全ページ生成
   // ================================================================
-
-  /**
-   * 履歴書の全ページHTMLを生成
-   */
-  function generateResumeHTML(profile, education, qualifications, application) {
+  function generateResumeHTML(profile, education, qualifications, application, options) {
+    const opt = { ...DEFAULT_OPTIONS, ...options };
     const subDate = application?.submissionDate || Utils.todayStr();
-    const p1 = resumePage1(profile || {}, education || [], subDate);
-    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {});
+    const p1 = resumePage1(profile || {}, education || [], subDate, opt);
+    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {}, opt);
     return p1 + p2;
   }
 
-  /**
-   * 職務経歴書の全ページHTMLを生成
-   */
   function generateCareerHTML(profile, careers, qualifications, application) {
     const subDate = application?.submissionDate || Utils.todayStr();
-    const totalPages = 2;
-    const p1 = careerPage1(profile || {}, careers || [], application || {}, subDate, totalPages);
-    const p2 = careerPage2(qualifications || [], application || {}, totalPages);
+    const p1 = careerPage1(profile || {}, careers || [], application || {}, subDate);
+    const p2 = careerPage2(qualifications || [], application || {});
     return p1 + p2;
   }
 
   return {
     generateResumeHTML,
     generateCareerHTML,
+    checkOverflow,
+    DEFAULT_OPTIONS,
   };
 })();

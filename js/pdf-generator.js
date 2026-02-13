@@ -68,9 +68,9 @@ const PdfGenerator = (() => {
   /**
    * 履歴書PDFを生成
    */
-  async function generateResumePDF(profile, education, qualifications, application) {
+  async function generateResumePDF(profile, education, qualifications, application, options) {
     const container = document.getElementById('pdf-render-area');
-    container.innerHTML = Templates.generateResumeHTML(profile, education, qualifications, application);
+    container.innerHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options);
 
     // レンダリング待ち
     await new Promise((r) => setTimeout(r, 300));
@@ -105,9 +105,9 @@ const PdfGenerator = (() => {
   /**
    * 一括PDF生成（履歴書 + 職務経歴書）
    */
-  async function generateAllPDF(profile, education, careers, qualifications, application) {
+  async function generateAllPDF(profile, education, careers, qualifications, application, options) {
     const container = document.getElementById('pdf-render-area');
-    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application);
+    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options);
     const careerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application);
     container.innerHTML = resumeHTML + careerHTML;
 

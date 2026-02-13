@@ -8,12 +8,63 @@ const App = (() => {
   let currentScreen = 'input'; // 'input' | 'preview'
   let currentAppId = null;
 
+  // アドバンストモード設定
+  let advancedSettings = loadAdvancedSettings();
+
   // キャッシュ
   let profileData = {};
   let educationData = [];
   let careerData = [];
   let qualificationsData = [];
   let applicationsData = [];
+
+  // ================================================================
+  // アドバンストモード設定
+  // ================================================================
+  function loadAdvancedSettings() {
+    try {
+      const saved = localStorage.getItem('resumeCreater_advancedSettings');
+      if (saved) return { ...Templates.DEFAULT_OPTIONS, ...JSON.parse(saved) };
+    } catch (e) { /* ignore */ }
+    return { ...Templates.DEFAULT_OPTIONS };
+  }
+
+  function saveAdvancedSettings() {
+    localStorage.setItem('resumeCreater_advancedSettings', JSON.stringify(advancedSettings));
+  }
+
+  function getOptions() {
+    if (!advancedSettings.advancedMode) return { ...Templates.DEFAULT_OPTIONS, advancedMode: false };
+    return {
+      advancedMode: true,
+      page1HistoryRows: advancedSettings.page1HistoryRows,
+      page2HistoryRows: advancedSettings.page2HistoryRows,
+      qualificationRows: advancedSettings.qualificationRows,
+    };
+  }
+
+  function applyAdvancedUI() {
+    const checkbox = document.getElementById('advanced-mode');
+    const controls = document.getElementById('advanced-controls');
+    if (!checkbox || !controls) return;
+    checkbox.checked = advancedSettings.advancedMode;
+    controls.classList.toggle('hidden', !advancedSettings.advancedMode);
+    document.getElementById('adv-p1-history').value = advancedSettings.page1HistoryRows;
+    document.getElementById('adv-p2-history').value = advancedSettings.page2HistoryRows;
+    document.getElementById('adv-qual').value = advancedSettings.qualificationRows;
+  }
+
+  function showWarnings(warnings) {
+    const banner = document.getElementById('preview-warnings');
+    if (!banner) return;
+    if (!warnings || warnings.length === 0) {
+      banner.classList.add('hidden');
+      banner.innerHTML = '';
+      return;
+    }
+    banner.classList.remove('hidden');
+    banner.innerHTML = '<strong>⚠ 注意</strong><ul>' + warnings.map(w => `<li>${Utils.escapeHtml(w)}</li>`).join('') + '</ul>';
+  }
 
   // ================================================================
   // 初期化
@@ -96,6 +147,29 @@ const App = (() => {
 
     // リセット
     document.getElementById('btn-reset').addEventListener('click', resetAllData);
+
+    // アドバンストモード
+    const advCheckbox = document.getElementById('advanced-mode');
+    if (advCheckbox) {
+      advCheckbox.addEventListener('change', () => {
+        advancedSettings.advancedMode = advCheckbox.checked;
+        document.getElementById('advanced-controls').classList.toggle('hidden', !advCheckbox.checked);
+        saveAdvancedSettings();
+        if (currentScreen === 'preview') showPreview();
+      });
+    }
+    ['adv-p1-history', 'adv-p2-history', 'adv-qual'].forEach((id) => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.addEventListener('change', () => {
+          advancedSettings.page1HistoryRows = Number(document.getElementById('adv-p1-history').value) || 18;
+          advancedSettings.page2HistoryRows = Number(document.getElementById('adv-p2-history').value) || 5;
+          advancedSettings.qualificationRows = Number(document.getElementById('adv-qual').value) || 6;
+          saveAdvancedSettings();
+          if (currentScreen === 'preview') showPreview();
+        });
+      }
+    });
   }
 
   // ================================================================
@@ -145,12 +219,22 @@ const App = (() => {
   async function showPreview() {
     showScreen('preview');
     await loadAllData();
+    applyAdvancedUI();
     const app = currentAppId ? applicationsData.find((a) => a.id === currentAppId) : applicationsData[0];
+    const options = getOptions();
 
     const previewArea = document.getElementById('preview-area');
-    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app);
+    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app, options);
     const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app);
     previewArea.innerHTML = resumeHTML + careerHTML;
+
+    // アドバンストモード時の警告表示
+    if (options.advancedMode) {
+      const warnings = Templates.checkOverflow(educationData, qualificationsData, options);
+      showWarnings(warnings);
+    } else {
+      showWarnings([]);
+    }
 
     // プレビュー用応募先セレクタ
     renderPreviewAppSelector(app?.id);
@@ -782,16 +866,17 @@ const App = (() => {
       const app = currentAppId
         ? applicationsData.find((a) => a.id === currentAppId)
         : applicationsData[0];
+      const options = getOptions();
 
       switch (type) {
         case 'resume':
-          await PdfGenerator.generateResumePDF(profileData, educationData, qualificationsData, app);
+          await PdfGenerator.generateResumePDF(profileData, educationData, qualificationsData, app, options);
           break;
         case 'career':
           await PdfGenerator.generateCareerPDF(profileData, careerData, qualificationsData, app);
           break;
         case 'all':
-          await PdfGenerator.generateAllPDF(profileData, educationData, careerData, qualificationsData, app);
+          await PdfGenerator.generateAllPDF(profileData, educationData, careerData, qualificationsData, app, options);
           break;
       }
       Utils.showToast('PDFを生成しました', 'success');

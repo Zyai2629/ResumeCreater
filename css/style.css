@@ -605,43 +605,75 @@ body {
 }
 
 /* ============ 履歴書スタイル ============ */
-.resume-header {
+
+/* 上部エリア（氏名・生年月日 + 写真） */
+.resume-top-area {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  position: relative;
+  gap: 5mm;
+  margin-bottom: 2px;
+}
+
+.resume-top-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.resume-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
 }
 
 .resume-title {
   font-size: 22pt;
   font-weight: 700;
-  margin-right: auto;
 }
 
 .resume-date {
   font-size: 11pt;
-  position: absolute;
-  right: 120px;
-  top: 8px;
 }
 
 .photo-box {
   width: 30mm;
   height: 40mm;
   border: 1px dashed #999;
-  position: absolute;
-  right: 0;
-  top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 9pt;
   color: #999;
+  flex-shrink: 0;
+}
+
+/* 氏名テーブル */
+.resume-name-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2px;
+}
+
+.resume-name-table td {
+  border: 1px solid #333;
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+/* 生年月日テーブル */
+.resume-birth-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2px;
+}
+
+.resume-birth-table td {
+  border: 1px solid #333;
+  padding: 4px 8px;
 }
 
 /* 履歴書テーブル */
 .resume-info-table {
-  width: calc(100% - 35mm);
+  width: 100%;
   border-collapse: collapse;
   margin-bottom: 2px;
 }
@@ -919,7 +951,7 @@ body {
 /* 職務経歴書 資格テーブル */
 .qual-table {
   border-collapse: collapse;
-  width: auto;
+  width: 100%;
   margin-bottom: 8px;
 }
 
@@ -964,13 +996,7 @@ body {
   margin-top: 24px;
 }
 
-.page-number {
-  position: absolute;
-  bottom: 10mm;
-  right: 20mm;
-  font-size: 10pt;
-  color: #666;
-}
+/* page-number removed from templates */
 
 /* ============ PDF レンダリングエリア ============ */
 #pdf-render-area {
@@ -1014,6 +1040,10 @@ body {
 
 /* ============ レスポンシブ ============ */
 @media (max-width: 768px) {
+  #preview-area {
+    padding: 8px;
+  }
+
   .a4-page {
     width: 100%;
     min-height: auto;
@@ -1037,23 +1067,21 @@ body {
   }
 
   .photo-box {
-    width: 25mm;
-    height: 33mm;
-  }
-
-  .resume-info-table {
-    width: 100%;
-  }
-
-  .resume-date {
-    position: static;
-    display: block;
-    text-align: right;
-    margin-bottom: 4px;
+    width: 22mm;
+    height: 30mm;
   }
 
   .contact-info-cell {
-    width: 150px;
+    width: 120px;
+    font-size: 8pt;
+  }
+
+  .resume-top-area {
+    gap: 2mm;
+  }
+
+  .resume-date {
+    font-size: 9pt;
   }
 }
 
@@ -1074,6 +1102,63 @@ body {
   .entry-row .input-content {
     width: 100%;
   }
+}
+
+/* ============ アドバンストモードパネル ============ */
+.advanced-panel {
+  background: #f0f4f8;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.advanced-panel .checkbox-label {
+  margin-bottom: 8px;
+}
+
+.advanced-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.advanced-controls .form-group {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 100px;
+}
+
+.advanced-controls label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 2px;
+}
+
+.advanced-controls input[type="number"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+/* 警告バナー */
+.warning-banner {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin: 8px 16px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.warning-banner ul {
+  margin: 4px 0 0 1.5em;
+  padding: 0;
 }
 
 /* ============ 印刷用 ============ */

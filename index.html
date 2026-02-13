@@ -229,6 +229,32 @@
       <button class="btn-sm btn-success" id="btn-pdf-all">📄 一括PDF</button>
       <button class="btn-sm" id="btn-back-input" style="background:#64748b;color:white;">← 戻る</button>
     </div>
+
+    <!-- アドバンストモードパネル -->
+    <div class="advanced-panel" id="advanced-panel">
+      <label class="checkbox-label">
+        <input type="checkbox" id="advanced-mode">
+        <span>アドバンストモード（行数手動設定）</span>
+      </label>
+      <div id="advanced-controls" class="advanced-controls hidden">
+        <div class="form-group">
+          <label for="adv-p1-history">履歴書P1 学歴・職歴行数</label>
+          <input type="number" id="adv-p1-history" value="18" min="5" max="30">
+        </div>
+        <div class="form-group">
+          <label for="adv-p2-history">履歴書P2 学歴・職歴行数</label>
+          <input type="number" id="adv-p2-history" value="5" min="0" max="20">
+        </div>
+        <div class="form-group">
+          <label for="adv-qual">資格行数</label>
+          <input type="number" id="adv-qual" value="6" min="0" max="20">
+        </div>
+      </div>
+    </div>
+
+    <!-- 警告バナー -->
+    <div id="preview-warnings" class="warning-banner hidden"></div>
+
     <div id="preview-area"></div>
   </div>
 
