@@ -1,6 +1,6 @@
 # 履歴書・職務経歴書作成アプリ 仕様書
 
-> 最終更新: 2026年2月14日 (v8)
+> 最終更新: 2026年2月14日 (v9)
 
 ## 1. 概要
 
@@ -115,8 +115,8 @@ ResumeCreater/
 | position | string | | 役職・ポジション名 |
 | department | string | | 配属先・部署 |
 | dispatchTo | string | | 派遣先企業名（派遣の場合） |
-| dispatchFrom | string | | 派遣会社名/派遣元（派遣の場合） |
-| isDispatch | boolean | | 派遣として勤務フラグ |
+| dispatchFrom | string | | （v9で廃止・後方互換用）派遣会社名。v9以降はcompanyNameを使用 |
+| isDispatch | boolean | | 派遣として勤務フラグ。ON時はcompanyNameが派遣元名になる |
 | duties | string[] | | 【業務内容】箇条書きリスト |
 | achievements | string[] | | 【業務上の工夫・成果】箇条書きリスト |
 | order | number | ○ | 表示順序（新しい職歴が上） |

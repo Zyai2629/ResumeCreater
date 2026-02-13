@@ -634,7 +634,7 @@ body {
 /* ============ A4ページ（プレビュー・PDF用） ============ */
 .a4-page {
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   background: white;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
   font-family: var(--font-serif);
@@ -648,6 +648,8 @@ body {
 /* 履歴書ページ：左右均等の余白 */
 .resume-page {
   padding: 14mm 13mm 16mm 13mm;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 職務経歴書ページ：左広め・右狭めの余白 */
@@ -659,16 +661,9 @@ body {
 
 /* ============ 履歴書スタイル ============ */
 
-/* 上部エリア（氏名・生年月日 + 写真） */
+/* 上部エリア */
 .resume-top-area {
-  display: flex;
-  gap: 3mm;
   margin-bottom: 0;
-}
-
-.resume-top-content {
-  flex: 1;
-  min-width: 0;
 }
 
 .resume-header-row {
@@ -679,7 +674,7 @@ body {
 }
 
 .resume-title {
-  font-size: 20pt;
+  font-size: 22pt;
   font-weight: 700;
 }
 
@@ -687,16 +682,25 @@ body {
   font-size: 10pt;
 }
 
+/* 写真セル */
+.photo-cell {
+  width: 46mm;
+  text-align: center;
+  vertical-align: top;
+  padding: 2mm;
+}
+
 .photo-box {
-  width: 30mm;
-  height: 40mm;
+  width: 24mm;
+  min-height: 15mm;
   border: 1px dashed #999;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 9pt;
   color: #999;
-  flex-shrink: 0;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 /* 氏名テーブル */
@@ -745,7 +749,7 @@ body {
 .label-cell {
   background: #f9f9f9;
   font-size: 9pt;
-  width: 70px;
+  width: 20mm;
 }
 
 .furigana-label {
@@ -761,7 +765,7 @@ body {
 }
 
 .name-value {
-  font-size: 14pt;
+  font-size: 16pt;
   font-weight: 700;
 }
 
@@ -770,9 +774,10 @@ body {
 }
 
 .gender-cell {
-  width: 80px;
+  width: 46mm;
   font-size: 9pt;
   text-align: center;
+  vertical-align: middle;
 }
 
 .gender-note {
@@ -796,7 +801,7 @@ body {
 
 .contact-info-cell {
   font-size: 9pt;
-  width: 200px;
+  width: 46mm;
 }
 
 .contact-note {
@@ -815,15 +820,19 @@ body {
 .history-table th,
 .history-table td {
   border: 1px solid #000;
-  padding: 2px 6px;
-  font-size: 9.5pt;
-  height: 1.6em;
+  padding: 2mm 2mm;
+  font-size: 10pt;
+}
+
+/* 履歴書ページ1: 学歴・職歴テーブルを残りスペースで埋める */
+#resume-page1 .history-table {
+  flex: 1;
 }
 
 .history-table th {
   background: #f9f9f9;
   font-weight: 600;
-  font-size: 9.5pt;
+  font-size: 10pt;
   text-align: center;
 }
 
@@ -845,6 +854,9 @@ body {
 .motivation-section {
   border: 2px solid #000;
   margin-top: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .motivation-header {
@@ -856,7 +868,7 @@ body {
 
 .motivation-body {
   padding: 6px 8px;
-  min-height: 120px;
+  flex: 1;
   font-size: 9.5pt;
   text-align: justify;
   text-justify: inter-ideograph;
@@ -890,7 +902,7 @@ body {
 
 .request-body {
   padding: 6px 8px;
-  min-height: 50px;
+  min-height: 30mm;
   font-size: 9.5pt;
   text-align: justify;
   text-justify: inter-ideograph;
@@ -940,6 +952,7 @@ body {
 }
 
 .career-block {
+  border: 1px solid #000;
   margin-bottom: 12px;
   page-break-inside: avoid;
 }
@@ -948,8 +961,9 @@ body {
   font-size: 10pt;
   font-weight: 600;
   margin-bottom: 0;
-  padding: 4px 0;
+  padding: 4px 6px;
   border-bottom: 1px solid #000;
+  background: #f9f9f9;
 }
 
 .career-dispatch {
@@ -973,15 +987,19 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0;
-  border: 1px solid #000;
-  border-bottom: none;
+  border: none;
+  border-bottom: 1px solid #000;
 }
 
 .company-info-table td {
-  border: 1px solid #000;
+  border: none;
   padding: 4px 6px;
   font-size: 10pt;
   vertical-align: top;
+}
+
+.company-info-table .position-cell {
+  border-left: 1px solid #000;
 }
 
 .company-details {
@@ -998,23 +1016,23 @@ body {
 .career-duties-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 8px;
-  border: 1px solid #000;
+  margin-bottom: 0;
+  border: none;
 }
 
 .career-duties-table td {
-  border: 1px solid #000;
+  border: none;
   padding: 4px 6px;
   font-size: 10pt;
   vertical-align: top;
 }
 
 .period-col {
-  width: 70px;
+  width: 24mm;
   text-align: center;
   vertical-align: top;
-  white-space: nowrap;
   font-size: 10pt;
+  border-right: 1px solid #000;
 }
 
 .duties-col {
@@ -1109,8 +1127,7 @@ body {
 .page-number {
   position: absolute;
   bottom: 10mm;
-  left: 0;
-  right: 0;
+  right: 11mm;
   text-align: right;
   font-size: 10.5pt;
   color: #000;
@@ -1171,7 +1188,7 @@ body {
   /* スマホではページをスケーリングで縮小表示 */
   #preview-area .a4-page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     font-size: 10pt;
     box-shadow: none;
     border: 1px solid #ccc;

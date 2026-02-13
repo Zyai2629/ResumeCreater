@@ -74,41 +74,39 @@ const Templates = (() => {
 
     return `
 <div class="a4-page resume-page" id="resume-page1">
-  <div class="resume-top-area">
-    <div class="resume-top-content">
-      <div class="resume-header-row">
-        <h1 class="resume-title">履歴書</h1>
-        <span class="resume-date">${e(dateLabel)}</span>
-      </div>
-
-      <table class="resume-name-table">
-        <tr>
-          <td class="label-cell" style="width:60px;">
-            <span class="furigana-label">ふりがな</span><br>氏名
-          </td>
-          <td class="name-cell">
-            <span class="furigana">${e(profile.nameKana)}</span><br>
-            <span class="name-value">${e(profile.name)}</span>
-          </td>
-          <td class="gender-cell">
-            <span class="gender-note">※性別</span><br>
-            ${e(profile.gender || '')}
-          </td>
-        </tr>
-      </table>
-
-      <table class="resume-birth-table">
-        <tr>
-          <td class="birth-cell">${e(birthLabel)}</td>
-        </tr>
-      </table>
-    </div>
-    <div class="photo-box">${photoHtml}</div>
+  <div class="resume-header-row">
+    <h1 class="resume-title">履歴書</h1>
+    <span class="resume-date">${e(dateLabel)}</span>
   </div>
+
+  <table class="resume-name-table">
+    <tr>
+      <td class="label-cell">
+        <span class="furigana-label">ふりがな</span><br>氏名
+      </td>
+      <td class="name-cell">
+        <span class="furigana">${e(profile.nameKana)}</span><br>
+        <span class="name-value">${e(profile.name)}</span>
+      </td>
+      <td class="photo-cell">
+        <div class="photo-box">${photoHtml}</div>
+      </td>
+    </tr>
+  </table>
+
+  <table class="resume-birth-table">
+    <tr>
+      <td class="birth-cell">${e(birthLabel)}</td>
+      <td class="gender-cell">
+        <span class="gender-note">※性別</span><br>
+        ${e(profile.gender || '')}
+      </td>
+    </tr>
+  </table>
 
   <table class="resume-info-table address-table">
     <tr>
-      <td class="label-cell" style="width:60px;">
+      <td class="label-cell">
         <span class="furigana-label">ふりがな</span><br>現住所
       </td>
       <td class="address-cell">
@@ -116,7 +114,7 @@ const Templates = (() => {
         〒${e(profile.postalCode)}<br>
         ${e(profile.address)}
       </td>
-      <td class="contact-info-cell" style="width:200px;">
+      <td class="contact-info-cell">
         電話　${e(profile.phone)}<br>
         E-mail<br>${e(profile.email)}
       </td>
@@ -141,8 +139,8 @@ const Templates = (() => {
   <table class="history-table">
     <thead>
       <tr>
-        <th style="width:60px;">年</th>
-        <th style="width:40px;">月</th>
+        <th style="width:20mm;">年</th>
+        <th style="width:14mm;">月</th>
         <th>学　歴 ・ 職　歴（各別にまとめて書く）</th>
       </tr>
     </thead>
@@ -179,8 +177,8 @@ const Templates = (() => {
   <table class="history-table">
     <thead>
       <tr>
-        <th style="width:60px;">年</th>
-        <th style="width:40px;">月</th>
+        <th style="width:20mm;">年</th>
+        <th style="width:14mm;">月</th>
         <th>学　歴 ・ 職　歴（各別にまとめて書く）</th>
       </tr>
     </thead>
@@ -193,8 +191,8 @@ const Templates = (() => {
   <table class="history-table qualification-table">
     <thead>
       <tr>
-        <th style="width:60px;">年</th>
-        <th style="width:40px;">月</th>
+        <th style="width:20mm;">年</th>
+        <th style="width:14mm;">月</th>
         <th>資　格 ・ 免　許</th>
       </tr>
     </thead>
@@ -245,8 +243,7 @@ const Templates = (() => {
       // 期間ヘッダー：派遣の場合は派遣先/派遣元を表示
       let periodHeaderText = '';
       if (c.isDispatch && c.dispatchTo) {
-        const agencyName = c.dispatchFrom || c.companyName;
-        periodHeaderText = `${startLabel}～${endLabel}　派遣先：${e(c.dispatchTo)}/ 派遣元：${e(agencyName)}`;
+        periodHeaderText = `${startLabel}～${endLabel}　派遣先：${e(c.dispatchTo)}/ 派遣元：${e(c.companyName)}`;
       } else {
         periodHeaderText = `${startLabel}～${endLabel}　${e(c.companyName)}`;
       }

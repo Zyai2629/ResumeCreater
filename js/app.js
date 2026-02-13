@@ -489,8 +489,8 @@ const App = (() => {
       </div>
 
       <div class="form-group">
-        <label>会社名</label>
-        <input type="text" class="career-company" value="${Utils.escapeHtml(career.companyName || '')}" placeholder="会社名">
+        <label class="company-name-label">${career.isDispatch ? '派遣会社名（派遣元）' : '会社名'}</label>
+        <input type="text" class="career-company" value="${Utils.escapeHtml(career.companyName || '')}" placeholder="${career.isDispatch ? '派遣会社名' : '会社名'}">
       </div>
 
       <label class="checkbox-label" style="margin-bottom:8px;">
@@ -499,15 +499,9 @@ const App = (() => {
       </label>
 
       <div class="dispatch-fields" style="${career.isDispatch ? '' : 'display:none;'}">
-        <div class="form-row">
-          <div class="form-group">
-            <label>派遣会社名（派遣元）</label>
-            <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
-          </div>
-          <div class="form-group">
-            <label>派遣先企業名（派遣の場合）</label>
-            <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
-          </div>
+        <div class="form-group">
+          <label>派遣先企業名（派遣の場合）</label>
+          <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
         </div>
       </div>
 
@@ -602,8 +596,7 @@ const App = (() => {
       entry.employmentType = card.querySelector('.career-employment-type').value;
       entry.department = card.querySelector('.career-department').value;
       entry.isDispatch = card.querySelector('.career-is-dispatch').checked;
-      entry.dispatchTo = card.querySelector('.career-dispatch-to').value;
-      entry.dispatchFrom = card.querySelector('.career-dispatch-from').value;
+      entry.dispatchTo = card.querySelector('.career-dispatch-to')?.value || '';
 
       // 業務内容リスト
       entry.duties = Array.from(card.querySelectorAll('.duty-input')).map((inp) => inp.value);
@@ -639,10 +632,16 @@ const App = (() => {
     // 派遣チェック切替
     card.querySelector('.career-is-dispatch').addEventListener('change', (ev) => {
       const dispatchFields = card.querySelector('.dispatch-fields');
+      const companyLabel = card.querySelector('.company-name-label');
+      const companyInput = card.querySelector('.career-company');
       if (ev.target.checked) {
         dispatchFields.style.display = '';
+        companyLabel.textContent = '派遣会社名（派遣元）';
+        companyInput.placeholder = '派遣会社名';
       } else {
         dispatchFields.style.display = 'none';
+        companyLabel.textContent = '会社名';
+        companyInput.placeholder = '会社名';
       }
       saveCareerFields();
     });
