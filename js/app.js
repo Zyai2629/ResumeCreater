@@ -148,6 +148,10 @@ const App = (() => {
     // リセット
     document.getElementById('btn-reset').addEventListener('click', resetAllData);
 
+    // ウィンドウリサイズ時のスケーリング更新
+    window.addEventListener('resize', debounce(scalePreviewPages, 150));
+    window.addEventListener('orientationchange', () => setTimeout(scalePreviewPages, 300));
+
     // アドバンストモード
     const advCheckbox = document.getElementById('advanced-mode');
     if (advCheckbox) {
@@ -224,9 +228,9 @@ const App = (() => {
     const options = getOptions();
 
     const previewArea = document.getElementById('preview-area');
-    const totalPages = 4; // 履歴書2ページ + 職務経歴書2ページ
-    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app, options, 1, totalPages);
-    const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 3, totalPages);
+    // 各文書ごとにページ番号をカウント（履歴書 1/2, 2/2 / 職務経歴書 1/2, 2/2）
+    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app, options, 1, 2);
+    const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 1, 2);
     previewArea.innerHTML = resumeHTML + careerHTML;
 
     // アドバンストモード時の警告表示
@@ -253,6 +257,7 @@ const App = (() => {
       pages.forEach((p) => {
         p.style.transform = '';
         p.style.marginBottom = '';
+        p.style.width = '';
       });
       return;
     }
@@ -260,10 +265,13 @@ const App = (() => {
     const a4HeightPx = 1122.5; // 297mm in px at 96dpi
     const padding = 8;
     const scale = Math.min(1, (viewportWidth - padding) / a4WidthPx);
+    const scaledHeight = a4HeightPx * scale;
     pages.forEach((p) => {
       p.style.transformOrigin = 'top left';
       p.style.transform = `scale(${scale})`;
-      p.style.marginBottom = `${-(a4HeightPx * (1 - scale))}px`;
+      // 縮小分のネガティブマージンで重なりを防止
+      p.style.height = `${a4HeightPx}px`;
+      p.style.marginBottom = `${-(a4HeightPx - scaledHeight) + 8}px`;
     });
   }
 

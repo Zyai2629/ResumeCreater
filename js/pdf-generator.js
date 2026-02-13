@@ -107,9 +107,9 @@ const PdfGenerator = (() => {
    */
   async function generateAllPDF(profile, education, careers, qualifications, application, options) {
     const container = document.getElementById('pdf-render-area');
-    const totalPages = 4;
-    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options, 1, totalPages);
-    const careerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application, 3, totalPages);
+    // 各文書ごとにページ番号をカウント（履歴書 1/2, 2/2 / 職務経歴書 1/2, 2/2）
+    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options, 1, 2);
+    const careerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application, 1, 2);
     container.innerHTML = resumeHTML + careerHTML;
 
     await new Promise((r) => setTimeout(r, 300));

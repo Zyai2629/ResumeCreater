@@ -356,8 +356,8 @@ const Templates = (() => {
     <div class="career-motivation-text">${e(careerMotivation).replace(/\n/g, '<br>')}</div>
   </div>` : ''}
 
-  ${pageFooter(pageNum, totalPages)}
   <div class="career-end">以上</div>
+  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
