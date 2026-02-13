@@ -20,23 +20,19 @@
     <nav class="header-nav">
       <button class="nav-btn active" id="btn-input">入力</button>
       <button class="nav-btn" id="btn-preview">プレビュー</button>
-      <button class="menu-btn" id="btn-menu">☰</button>
+      <button class="nav-btn nav-btn-icon" id="btn-import-json" title="JSONインポート">📤</button>
+      <button class="nav-btn nav-btn-icon" id="btn-export-json" title="JSONエクスポート">📥</button>
+      <button class="nav-btn nav-btn-icon nav-btn-danger" id="btn-reset" title="リセット">🗑</button>
     </nav>
-    <!-- ドロップダウンメニュー -->
-    <div class="dropdown-menu hidden" id="dropdown-menu">
-      <button id="btn-export-json">📥 JSONエクスポート</button>
-      <button id="btn-import-json">📤 JSONインポート</button>
-      <button id="btn-export-csv">📥 CSVエクスポート</button>
-      <button id="btn-import-csv">📤 CSVインポート</button>
-    </div>
   </header>
 
   <!-- ========== 入力画面 ========== -->
   <div id="input-screen">
     <!-- タブナビ -->
-    <nav class="tab-nav">
+    <nav class="tab-nav" id="tab-nav">
       <button class="tab-btn active" data-tab="profile">基本情報</button>
       <button class="tab-btn" data-tab="education">学歴・職歴</button>
+      <button class="tab-btn" data-tab="career">職務経歴</button>
       <button class="tab-btn" data-tab="qualifications">資格</button>
       <button class="tab-btn" data-tab="applications">応募先</button>
     </nav>
@@ -76,9 +72,15 @@
           <div class="photo-preview-box">
             <img id="photo-preview" class="hidden" alt="証明写真">
           </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label for="photo-input">写真を選択</label>
-            <input type="file" id="photo-input" accept="image/*" capture="environment">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="photo-input">写真を選択</label>
+              <input type="file" id="photo-input" accept="image/*" capture="environment">
+            </div>
+            <label class="checkbox-label">
+              <input type="checkbox" id="photo-enabled" name="photoEnabled" checked>
+              <span>履歴書に写真を掲載する</span>
+            </label>
           </div>
         </div>
 
@@ -142,8 +144,17 @@
       <button class="btn-add" id="btn-add-edu">＋ 学歴を追加</button>
 
       <h3 class="section-title">職歴</h3>
+      <p class="hint-text">※ 年月が不要な行（補足等）は年月を空欄にしてください</p>
       <div id="work-list"></div>
       <button class="btn-add" id="btn-add-work">＋ 職歴を追加</button>
+    </div>
+
+    <!-- ===== 職務経歴タブ ===== -->
+    <div class="tab-content" id="tab-career">
+      <h3 class="section-title">職務経歴</h3>
+      <p class="hint-text">※ 各職務経歴の詳細を入力します。職務経歴書のPDFに反映されます。</p>
+      <div id="career-list"></div>
+      <button class="btn-add" id="btn-add-career">＋ 職務経歴を追加</button>
     </div>
 
     <!-- ===== 資格タブ ===== -->
@@ -231,7 +242,6 @@
   <!-- App modules -->
   <script src="js/utils.js"></script>
   <script src="js/db.js"></script>
-  <script src="js/csv-handler.js"></script>
   <script src="js/templates.js"></script>
   <script src="js/pdf-generator.js"></script>
   <script src="js/app.js"></script>

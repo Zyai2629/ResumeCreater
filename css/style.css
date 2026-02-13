@@ -102,38 +102,15 @@ body {
   justify-content: center;
 }
 
-/* ============ ドロップダウンメニュー ============ */
-.dropdown-menu {
-  position: absolute;
-  top: 56px;
-  right: 12px;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 200;
-  min-width: 200px;
-  overflow: hidden;
+/* ============ ナビボタンアイコン ============ */
+.nav-btn-icon {
+  padding: 8px;
+  font-size: 18px;
+  min-width: 44px;
 }
 
-.dropdown-menu button {
-  display: block;
-  width: 100%;
-  padding: 14px 16px;
-  text-align: left;
-  border: none;
-  background: none;
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--text);
-  border-bottom: 1px solid var(--border);
-}
-
-.dropdown-menu button:last-child {
-  border-bottom: none;
-}
-
-.dropdown-menu button:hover {
-  background: var(--bg);
+.nav-btn-danger:hover {
+  background: rgba(220,38,38,0.5);
 }
 
 /* ============ タブナビ ============ */
@@ -143,6 +120,9 @@ body {
   border-bottom: 2px solid var(--border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 56px;
+  z-index: 90;
 }
 
 .tab-btn {
@@ -284,6 +264,30 @@ body {
   display: none;
 }
 
+/* チェックボックスラベル */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* ヒントテキスト */
+.hint-text {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
 /* ============ エントリリスト ============ */
 .entry-row {
   display: flex;
@@ -395,6 +399,115 @@ body {
 .btn-success { background: var(--accent); color: white; }
 .btn-danger { background: var(--error); color: white; }
 .btn-danger:disabled { background: #ccc; cursor: default; }
+
+/* ============ 職務経歴入力フォーム ============ */
+.career-entry-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.career-entry-card .section-title {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.career-entry-card .section-title:first-child {
+  margin-top: 0;
+}
+
+.career-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.career-entry-num {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.career-entry-card .form-group {
+  margin-bottom: 10px;
+}
+
+.career-entry-card label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 3px;
+}
+
+.career-entry-card input,
+.career-entry-card select,
+.career-entry-card textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font);
+  background: white;
+}
+
+.career-entry-card textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.career-entry-card .form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.career-entry-card .form-row .form-group {
+  flex: 1;
+}
+
+/* 業務内容・成果のリスト入力 */
+.list-input-area {
+  margin-bottom: 8px;
+}
+
+.list-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.list-input-row input {
+  flex: 1;
+}
+
+.list-input-row .btn-delete {
+  min-width: 30px;
+  min-height: 30px;
+  font-size: 14px;
+}
+
+.btn-add-list-item {
+  background: none;
+  border: 1px dashed var(--border);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--primary);
+  cursor: pointer;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.btn-add-list-item:hover {
+  border-color: var(--primary);
+  background: rgba(37,99,235,0.05);
+}
 
 /* スキル・強み */
 .skill-entry {
@@ -652,6 +765,8 @@ body {
   padding: 8px;
   min-height: 150px;
   font-size: 10pt;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .section-label {
@@ -662,6 +777,8 @@ body {
 .section-text {
   text-indent: 1em;
   margin-bottom: 8px;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 /* 本人希望 */
@@ -681,6 +798,8 @@ body {
   padding: 8px;
   min-height: 60px;
   font-size: 10pt;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .gender-note-bottom {
@@ -722,6 +841,8 @@ body {
   font-size: 10pt;
   text-indent: 1em;
   line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .career-block {
@@ -771,6 +892,8 @@ body {
 .career-details {
   padding-left: 2em;
   font-size: 10pt;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .detail-section {
@@ -823,12 +946,16 @@ body {
 .skill-item .skill-desc {
   font-size: 10pt;
   line-height: 1.6;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .career-motivation-text {
   font-size: 10pt;
   text-indent: 1em;
   line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-ideograph;
 }
 
 .career-end {

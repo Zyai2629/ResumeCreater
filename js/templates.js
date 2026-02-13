@@ -26,14 +26,16 @@ const Templates = (() => {
     // 学歴見出し
     historyRows.push({ year: '', month: '', content: '学歴', isHeader: true });
     for (const item of eduItems) {
-      historyRows.push({ year: item.year, month: String(item.month).padStart(2, '0'), content: item.content });
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
-    // 空行
-    historyRows.push({ year: '', month: '', content: '' });
+    // 空行（学歴・職歴間の区切り）
+    historyRows.push({ year: '', month: '', content: '', isSeparator: true });
     // 職歴見出し
     historyRows.push({ year: '', month: '', content: '職歴', isHeader: true });
     for (const item of workItems) {
-      historyRows.push({ year: item.year, month: String(item.month).padStart(2, '0'), content: item.content });
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
 
     // ページ1に収める行数（残りはページ2へ）
@@ -41,7 +43,8 @@ const Templates = (() => {
     const page1Rows = historyRows.slice(0, maxRows);
     const remainingRows = historyRows.slice(maxRows);
 
-    const photoHtml = profile.photo
+    const photoEnabled = profile.photoEnabled !== false;
+    const photoHtml = (profile.photo && photoEnabled)
       ? `<img src="${profile.photo}" alt="証明写真" style="width:100%;height:100%;object-fit:cover;">`
       : '';
 
@@ -144,12 +147,14 @@ const Templates = (() => {
     const historyRows = [];
     historyRows.push({ year: '', month: '', content: '学歴', isHeader: true });
     for (const item of eduItems) {
-      historyRows.push({ year: item.year, month: String(item.month).padStart(2, '0'), content: item.content });
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
-    historyRows.push({ year: '', month: '', content: '' });
+    historyRows.push({ year: '', month: '', content: '', isSeparator: true });
     historyRows.push({ year: '', month: '', content: '職歴', isHeader: true });
     for (const item of workItems) {
-      historyRows.push({ year: item.year, month: String(item.month).padStart(2, '0'), content: item.content });
+      const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
+      historyRows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
 
     const maxPage1 = 18;
@@ -199,12 +204,15 @@ const Templates = (() => {
     <tbody>
       ${qualifications
         .map(
-          (q) => `
+          (q) => {
+            const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
+            return `
         <tr>
-          <td class="center">${q.year}</td>
-          <td class="center">${String(q.month).padStart(2, '0')}</td>
+          <td class="center">${q.year || ''}</td>
+          <td class="center">${monthStr}</td>
           <td>${e(q.content)}</td>
-        </tr>`
+        </tr>`;
+          }
         )
         .join('')}
       ${Array(Math.max(0, 6 - qualifications.length))
@@ -331,11 +339,14 @@ const Templates = (() => {
       <tbody>
         ${qualifications
           .map(
-            (q) => `
+            (q) => {
+              const monthStr = q.month ? String(q.month).padStart(2, '0') : '';
+              return `
           <tr>
             <td class="qual-name">${e(q.content)}</td>
-            <td class="qual-date">${q.year}年${String(q.month).padStart(2, '0')}月 ${q.content.includes('修了') ? '修了' : '取得'}</td>
-          </tr>`
+            <td class="qual-date">${q.year || ''}年${monthStr}月 ${q.content.includes('修了') ? '修了' : '取得'}</td>
+          </tr>`;
+            }
           )
           .join('')}
       </tbody>

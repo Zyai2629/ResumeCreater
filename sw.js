@@ -2,7 +2,7 @@
 // sw.js — Service Worker（オフラインキャッシュ）
 // ============================================================
 
-const CACHE_NAME = 'resume-creater-v2';
+const CACHE_NAME = 'resume-creater-v3';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -10,7 +10,6 @@ const ASSETS_TO_CACHE = [
   './css/style.css',
   './js/utils.js',
   './js/db.js',
-  './js/csv-handler.js',
   './js/templates.js',
   './js/pdf-generator.js',
   './js/app.js',

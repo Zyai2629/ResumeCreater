@@ -55,9 +55,21 @@ const App = (() => {
     // 写真アップロード
     document.getElementById('photo-input').addEventListener('change', handlePhotoUpload);
 
+    // 写真掲載チェックボックス
+    const photoCheckbox = document.getElementById('photo-enabled');
+    if (photoCheckbox) {
+      photoCheckbox.addEventListener('change', async () => {
+        profileData.photoEnabled = photoCheckbox.checked;
+        await DB.saveProfile(profileData);
+      });
+    }
+
     // 学歴・職歴追加
     document.getElementById('btn-add-edu').addEventListener('click', () => addEducationEntry('学歴'));
     document.getElementById('btn-add-work').addEventListener('click', () => addEducationEntry('職歴'));
+
+    // 職務経歴追加
+    document.getElementById('btn-add-career').addEventListener('click', addCareerEntry);
 
     // 資格追加
     document.getElementById('btn-add-qual').addEventListener('click', addQualificationEntry);
@@ -78,14 +90,12 @@ const App = (() => {
     document.getElementById('btn-pdf-all').addEventListener('click', () => generatePDF('all'));
     document.getElementById('btn-back-input').addEventListener('click', () => showScreen('input'));
 
-    // メニュー
-    document.getElementById('btn-menu').addEventListener('click', toggleMenu);
-
-    // エクスポート/インポート
+    // エクスポート/インポート (JSON only)
     document.getElementById('btn-export-json').addEventListener('click', exportJSON);
     document.getElementById('btn-import-json').addEventListener('click', importJSON);
-    document.getElementById('btn-export-csv').addEventListener('click', showCsvExportMenu);
-    document.getElementById('btn-import-csv').addEventListener('click', importCSV);
+
+    // リセット
+    document.getElementById('btn-reset').addEventListener('click', resetAllData);
   }
 
   // ================================================================
@@ -107,6 +117,9 @@ const App = (() => {
         break;
       case 'education':
         renderEducationList();
+        break;
+      case 'career':
+        renderCareerList();
         break;
       case 'qualifications':
         renderQualificationsList();
@@ -172,6 +185,11 @@ const App = (() => {
       photoPreview.src = profileData.photo;
       photoPreview.classList.remove('hidden');
     }
+    // 写真掲載チェックボックス
+    const photoCheckbox = document.getElementById('photo-enabled');
+    if (photoCheckbox) {
+      photoCheckbox.checked = profileData.photoEnabled !== false;
+    }
   }
 
   async function saveProfileForm() {
@@ -182,6 +200,9 @@ const App = (() => {
       data[key] = val;
     }
     data.photo = profileData.photo || '';
+    // チェックボックスはFormDataに含まれない場合がある
+    const photoCheckbox = document.getElementById('photo-enabled');
+    data.photoEnabled = photoCheckbox ? photoCheckbox.checked : true;
     profileData = { ...profileData, ...data };
     await DB.saveProfile(profileData);
   }
@@ -240,8 +261,8 @@ const App = (() => {
       input.addEventListener('change', async () => {
         const entry = educationData.find((x) => x.id === id);
         if (!entry) return;
-        entry.year = Number(row.querySelector('.input-year').value);
-        entry.month = Number(row.querySelector('.input-month').value);
+        entry.year = Number(row.querySelector('.input-year').value) || 0;
+        entry.month = Number(row.querySelector('.input-month').value) || 0;
         entry.content = row.querySelector('.input-content').value;
         await DB.saveEducation(entry);
         educationData = await DB.loadEducation();
@@ -264,6 +285,276 @@ const App = (() => {
   }
 
   // ================================================================
+  // 職務経歴
+  // ================================================================
+  function renderCareerList() {
+    const container = document.getElementById('career-list');
+    if (!container) return;
+
+    container.innerHTML = careerData.map((c, i) => careerEntryHTML(c, i)).join('');
+
+    // イベント設定
+    container.querySelectorAll('.career-entry-card').forEach(setupCareerEntryEvents);
+  }
+
+  function careerEntryHTML(career, index) {
+    const dutiesHtml = (career.duties || []).map((d, i) => `
+      <div class="list-input-row" data-list-index="${i}">
+        <input type="text" class="duty-input" value="${Utils.escapeHtml(d)}" placeholder="業務内容">
+        <button class="btn-delete btn-delete-duty" title="削除">✕</button>
+      </div>`).join('');
+
+    const achievementsHtml = (career.achievements || []).map((a, i) => `
+      <div class="list-input-row" data-list-index="${i}">
+        <input type="text" class="achievement-input" value="${Utils.escapeHtml(a)}" placeholder="成果">
+        <button class="btn-delete btn-delete-achievement" title="削除">✕</button>
+      </div>`).join('');
+
+    return `
+    <div class="career-entry-card" data-id="${career.id}">
+      <div class="career-entry-header">
+        <span class="career-entry-num">職務経歴 ${index + 1}</span>
+        <button class="btn-delete btn-delete-career" title="削除">✕</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>開始年月</label>
+          <input type="month" class="career-start" value="${career.startDate || ''}">
+        </div>
+        <div class="form-group">
+          <label>終了年月</label>
+          <input type="month" class="career-end-date" value="${career.endDate === '現在' ? '' : (career.endDate || '')}">
+          <label class="checkbox-label" style="margin-top:4px;">
+            <input type="checkbox" class="career-current" ${career.endDate === '現在' ? 'checked' : ''}>
+            <span>現在</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>会社名</label>
+        <input type="text" class="career-company" value="${Utils.escapeHtml(career.companyName || '')}" placeholder="会社名">
+      </div>
+
+      <div class="form-group">
+        <label>事業内容</label>
+        <input type="text" class="career-business" value="${Utils.escapeHtml(career.businessContent || '')}" placeholder="事業内容">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>資本金</label>
+          <input type="text" class="career-capital" value="${Utils.escapeHtml(career.capital || '')}" placeholder="例: 1億円">
+        </div>
+        <div class="form-group">
+          <label>売上高</label>
+          <input type="text" class="career-revenue" value="${Utils.escapeHtml(career.revenue || '')}" placeholder="例: 10億円">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>従業員数</label>
+          <input type="text" class="career-employees" value="${Utils.escapeHtml(career.employeeCount || '')}" placeholder="例: 100名">
+        </div>
+        <div class="form-group">
+          <label>上場区分</label>
+          <select class="career-listing">
+            <option value="" ${!career.listing ? 'selected' : ''}>未選択</option>
+            <option value="東証プライム" ${career.listing === '東証プライム' ? 'selected' : ''}>東証プライム</option>
+            <option value="東証スタンダード" ${career.listing === '東証スタンダード' ? 'selected' : ''}>東証スタンダード</option>
+            <option value="東証グロース" ${career.listing === '東証グロース' ? 'selected' : ''}>東証グロース</option>
+            <option value="非上場" ${career.listing === '非上場' ? 'selected' : ''}>非上場</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>役職・ポジション</label>
+          <input type="text" class="career-position" value="${Utils.escapeHtml(career.position || '')}" placeholder="例: リーダー">
+        </div>
+        <div class="form-group">
+          <label>雇用形態</label>
+          <select class="career-employment-type">
+            <option value="" ${!career.employmentType ? 'selected' : ''}>未選択</option>
+            <option value="正社員" ${career.employmentType === '正社員' ? 'selected' : ''}>正社員</option>
+            <option value="契約社員" ${career.employmentType === '契約社員' ? 'selected' : ''}>契約社員</option>
+            <option value="派遣社員" ${career.employmentType === '派遣社員' ? 'selected' : ''}>派遣社員</option>
+            <option value="アルバイト" ${career.employmentType === 'アルバイト' ? 'selected' : ''}>アルバイト</option>
+            <option value="業務委託" ${career.employmentType === '業務委託' ? 'selected' : ''}>業務委託</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>配属部署</label>
+        <input type="text" class="career-department" value="${Utils.escapeHtml(career.department || '')}" placeholder="例: 開発部">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>派遣先（派遣の場合）</label>
+          <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先企業名">
+        </div>
+        <div class="form-group">
+          <label>派遣元</label>
+          <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣元企業名">
+        </div>
+      </div>
+
+      <h3 class="section-title">業務内容</h3>
+      <div class="list-input-area duties-area">
+        ${dutiesHtml}
+      </div>
+      <button type="button" class="btn-add-list-item btn-add-duty">＋ 業務内容を追加</button>
+
+      <h3 class="section-title">業務上の工夫・成果</h3>
+      <div class="list-input-area achievements-area">
+        ${achievementsHtml}
+      </div>
+      <button type="button" class="btn-add-list-item btn-add-achievement">＋ 成果を追加</button>
+    </div>`;
+  }
+
+  function setupCareerEntryEvents(card) {
+    const id = Number(card.dataset.id);
+
+    // フィールド変更時の自動保存
+    const saveCareerFields = debounce(async () => {
+      const entry = careerData.find((x) => x.id === id);
+      if (!entry) return;
+
+      entry.startDate = card.querySelector('.career-start').value;
+      const isCurrent = card.querySelector('.career-current').checked;
+      entry.endDate = isCurrent ? '現在' : (card.querySelector('.career-end-date').value || '');
+      entry.companyName = card.querySelector('.career-company').value;
+      entry.businessContent = card.querySelector('.career-business').value;
+      entry.capital = card.querySelector('.career-capital').value;
+      entry.revenue = card.querySelector('.career-revenue').value;
+      entry.employeeCount = card.querySelector('.career-employees').value;
+      entry.listing = card.querySelector('.career-listing').value;
+      entry.position = card.querySelector('.career-position').value;
+      entry.employmentType = card.querySelector('.career-employment-type').value;
+      entry.department = card.querySelector('.career-department').value;
+      entry.dispatchTo = card.querySelector('.career-dispatch-to').value;
+      entry.dispatchFrom = card.querySelector('.career-dispatch-from').value;
+
+      // 業務内容リスト
+      entry.duties = Array.from(card.querySelectorAll('.duty-input')).map((inp) => inp.value);
+      // 成果リスト
+      entry.achievements = Array.from(card.querySelectorAll('.achievement-input')).map((inp) => inp.value);
+
+      await DB.saveCareer(entry);
+      careerData = await DB.loadCareer();
+    }, 500);
+
+    // 全inputとselectの変更を監視
+    card.querySelectorAll('input, select, textarea').forEach((el) => {
+      el.addEventListener('input', saveCareerFields);
+      el.addEventListener('change', saveCareerFields);
+    });
+
+    // 「現在」チェック切替
+    card.querySelector('.career-current').addEventListener('change', (e) => {
+      const endInput = card.querySelector('.career-end-date');
+      if (e.target.checked) {
+        endInput.value = '';
+        endInput.disabled = true;
+      } else {
+        endInput.disabled = false;
+      }
+      saveCareerFields();
+    });
+    // 初期状態
+    if (card.querySelector('.career-current').checked) {
+      card.querySelector('.career-end-date').disabled = true;
+    }
+
+    // カード削除
+    card.querySelector('.btn-delete-career').addEventListener('click', async () => {
+      if (!confirm('この職務経歴を削除しますか？')) return;
+      await DB.deleteCareer(id);
+      careerData = await DB.loadCareer();
+      renderCareerList();
+    });
+
+    // 業務内容の追加
+    card.querySelector('.btn-add-duty').addEventListener('click', async () => {
+      const entry = careerData.find((x) => x.id === id);
+      if (!entry) return;
+      if (!entry.duties) entry.duties = [];
+      entry.duties.push('');
+      await DB.saveCareer(entry);
+      careerData = await DB.loadCareer();
+      renderCareerList();
+    });
+
+    // 成果の追加
+    card.querySelector('.btn-add-achievement').addEventListener('click', async () => {
+      const entry = careerData.find((x) => x.id === id);
+      if (!entry) return;
+      if (!entry.achievements) entry.achievements = [];
+      entry.achievements.push('');
+      await DB.saveCareer(entry);
+      careerData = await DB.loadCareer();
+      renderCareerList();
+    });
+
+    // 業務内容の削除
+    card.querySelectorAll('.btn-delete-duty').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const entry = careerData.find((x) => x.id === id);
+        if (!entry) return;
+        const idx = Number(btn.closest('.list-input-row').dataset.listIndex);
+        entry.duties.splice(idx, 1);
+        await DB.saveCareer(entry);
+        careerData = await DB.loadCareer();
+        renderCareerList();
+      });
+    });
+
+    // 成果の削除
+    card.querySelectorAll('.btn-delete-achievement').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const entry = careerData.find((x) => x.id === id);
+        if (!entry) return;
+        const idx = Number(btn.closest('.list-input-row').dataset.listIndex);
+        entry.achievements.splice(idx, 1);
+        await DB.saveCareer(entry);
+        careerData = await DB.loadCareer();
+        renderCareerList();
+      });
+    });
+  }
+
+  async function addCareerEntry() {
+    const entry = {
+      id: Utils.generateId(),
+      companyName: '',
+      businessContent: '',
+      capital: '',
+      revenue: '',
+      employeeCount: '',
+      listing: '',
+      position: '',
+      employmentType: '',
+      department: '',
+      duties: [],
+      achievements: [],
+      dispatchTo: '',
+      dispatchFrom: '',
+      startDate: '',
+      endDate: '',
+      order: careerData.length,
+    };
+    await DB.saveCareer(entry);
+    careerData = await DB.loadCareer();
+    renderCareerList();
+  }
+
+  // ================================================================
   // 資格・免許
   // ================================================================
   function renderQualificationsList() {
@@ -283,8 +574,8 @@ const App = (() => {
         input.addEventListener('change', async () => {
           const entry = qualificationsData.find((x) => x.id === id);
           if (!entry) return;
-          entry.year = Number(row.querySelector('.input-year').value);
-          entry.month = Number(row.querySelector('.input-month').value);
+          entry.year = Number(row.querySelector('.input-year').value) || 0;
+          entry.month = Number(row.querySelector('.input-month').value) || 0;
           entry.content = row.querySelector('.input-content').value;
           await DB.saveQualification(entry);
           qualificationsData = await DB.loadQualifications();
@@ -427,21 +718,26 @@ const App = (() => {
       <div class="skill-entry-header">
         <span class="skill-num">${circled[i] || (i + 1)}</span>
         <input type="text" class="skill-title-input" value="${Utils.escapeHtml(s.title || '')}" placeholder="スキルタイトル">
-        <button class="btn-delete btn-delete-skill" title="削除">✕</button>
+        <button type="button" class="btn-delete btn-delete-skill" title="削除">✕</button>
       </div>
       <textarea class="skill-desc-input" placeholder="説明">${Utils.escapeHtml(s.description || '')}</textarea>
     </div>`).join('');
 
     // 削除イベント
     container.querySelectorAll('.btn-delete-skill').forEach((btn) => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
         const idx = Number(btn.closest('.skill-entry').dataset.index);
         const app = applicationsData.find((a) => a.id === currentAppId);
-        if (!app) return;
+        if (!app || !app.skills) return;
+        // まず現在の入力値を収集してから削除
+        app.skills = collectSkills();
         app.skills.splice(idx, 1);
         await DB.saveApplication(app);
         applicationsData = await DB.loadApplications();
-        renderSkillsList(app.skills);
+        const updatedApp = applicationsData.find((a) => a.id === currentAppId);
+        renderSkillsList(updatedApp?.skills || []);
       });
     });
 
@@ -467,10 +763,13 @@ const App = (() => {
     const app = applicationsData.find((a) => a.id === currentAppId);
     if (!app) return;
     if (!app.skills) app.skills = [];
+    // 現在の入力値を収集してから追加
+    app.skills = collectSkills();
     app.skills.push({ title: '', description: '' });
     await DB.saveApplication(app);
     applicationsData = await DB.loadApplications();
-    renderSkillsList(app.skills);
+    const updatedApp = applicationsData.find((a) => a.id === currentAppId);
+    renderSkillsList(updatedApp?.skills || []);
   }
 
   // ================================================================
@@ -503,24 +802,7 @@ const App = (() => {
   }
 
   // ================================================================
-  // メニュー
-  // ================================================================
-  function toggleMenu() {
-    const menu = document.getElementById('dropdown-menu');
-    menu.classList.toggle('hidden');
-  }
-
-  // メニュー外クリックで閉じる
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('dropdown-menu');
-    const btn = document.getElementById('btn-menu');
-    if (menu && !menu.contains(e.target) && e.target !== btn) {
-      menu.classList.add('hidden');
-    }
-  });
-
-  // ================================================================
-  // エクスポート / インポート
+  // エクスポート / インポート (JSON only)
   // ================================================================
   async function exportJSON() {
     try {
@@ -531,7 +813,6 @@ const App = (() => {
     } catch (err) {
       Utils.showToast('エクスポート失敗: ' + err.message, 'error');
     }
-    toggleMenu();
   }
 
   async function importJSON() {
@@ -544,47 +825,32 @@ const App = (() => {
     } catch (err) {
       Utils.showToast('インポート失敗: ' + err.message, 'error');
     }
-    toggleMenu();
   }
 
-  function showCsvExportMenu() {
-    const stores = ['profile', 'education', 'career', 'qualifications', 'applications'];
-    const labels = ['基本情報', '学歴・職歴', '職務経歴', '資格・免許', '応募先'];
-    const choice = prompt(
-      'CSVエクスポートするデータを番号で選択:\n' +
-      stores.map((s, i) => `${i + 1}. ${labels[i]}`).join('\n') +
-      '\n\n番号を入力 (1-5):'
-    );
-    if (!choice) { toggleMenu(); return; }
-    const idx = parseInt(choice) - 1;
-    if (idx < 0 || idx >= stores.length) {
-      Utils.showToast('無効な番号です', 'error');
-      toggleMenu();
-      return;
-    }
-    CsvHandler.exportCSV(stores[idx])
-      .then(() => Utils.showToast(`${labels[idx]}をCSVエクスポートしました`, 'success'))
-      .catch((err) => Utils.showToast('CSVエクスポート失敗: ' + err.message, 'error'));
-    toggleMenu();
-  }
-
-  async function importCSV() {
+  // ================================================================
+  // リセット
+  // ================================================================
+  async function resetAllData() {
+    if (!confirm('すべてのデータを削除してリセットしますか？\nこの操作は元に戻せません。')) return;
+    if (!confirm('本当にリセットしますか？')) return;
     try {
-      const { name, content } = await Utils.openFileDialog('.csv');
-      const storeName = CsvHandler.guessStoreName(name);
-      if (!storeName) {
-        Utils.showToast('ファイル名からデータ種別を判別できません。profile/education/career/qualifications/applications.csv の名前でインポートしてください。', 'error');
-        toggleMenu();
-        return;
-      }
-      await CsvHandler.importCSV(storeName, content);
-      await loadAllData();
-      switchTab(currentTab);
-      Utils.showToast(`CSVインポート完了（${storeName}）`, 'success');
+      await DB.clearStore(DB.STORES.PROFILE);
+      await DB.clearStore(DB.STORES.EDUCATION);
+      await DB.clearStore(DB.STORES.CAREER);
+      await DB.clearStore(DB.STORES.QUALIFICATIONS);
+      await DB.clearStore(DB.STORES.APPLICATIONS);
+      profileData = {};
+      educationData = [];
+      careerData = [];
+      qualificationsData = [];
+      applicationsData = [];
+      currentAppId = null;
+      switchTab('profile');
+      renderApplicationSelector();
+      Utils.showToast('すべてのデータをリセットしました', 'info');
     } catch (err) {
-      Utils.showToast('CSVインポート失敗: ' + err.message, 'error');
+      Utils.showToast('リセットに失敗しました: ' + err.message, 'error');
     }
-    toggleMenu();
   }
 
   // ================================================================
