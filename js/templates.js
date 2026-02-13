@@ -35,15 +35,18 @@ const Templates = (() => {
   }
 
   function historyRowHtml(r) {
+    const yearStr = r.year ? e(String(r.year)) : '&nbsp;';
+    const monthStr = r.month ? e(String(r.month)) : '&nbsp;';
+    const contentStr = r.content ? e(r.content) : '&nbsp;';
     return `<tr>
-          <td class="center">${e(String(r.year || ''))}</td>
-          <td class="center">${e(String(r.month || ''))}</td>
-          <td class="${r.isHeader ? 'center bold' : ''}">${e(r.content)}</td>
+          <td class="center">${yearStr}</td>
+          <td class="center">${monthStr}</td>
+          <td class="${r.isHeader ? 'center bold' : ''}">${contentStr}</td>
         </tr>`;
   }
 
   function emptyRowHtml() {
-    return '<tr><td>&nbsp;</td><td></td><td></td></tr>';
+    return '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
   }
 
   // ================================================================
@@ -238,20 +241,28 @@ const Templates = (() => {
     for (const c of careers) {
       const startLabel = Utils.formatYearMonth(c.startDate);
       const endLabel = c.endDate === '現在' ? '現在' : Utils.formatYearMonth(c.endDate);
-      const periodHeader = `${startLabel}～${endLabel}　　${c.companyName}`;
 
-      let dispatchLine = '';
+      // 派遣の場合は派遣元（派遣会社）先、会社名先
+      let companyDisplay = c.companyName;
+      let dispatchBlock = '';
       if (c.dispatchTo) {
-        dispatchLine = `<div class="career-dispatch">派遣先：${e(c.dispatchTo)}／ 派遣元：${e(c.dispatchFrom || c.companyName)}</div>`;
+        const agencyName = c.dispatchFrom || c.companyName;
+        companyDisplay = agencyName;
+        dispatchBlock = `
+        <div class="career-dispatch-info">
+          <div class="career-dispatch-line">派遣会社名：${e(agencyName)}</div>
+          <div class="career-dispatch-line">派遣先企業名：${e(c.dispatchTo)}</div>
+        </div>`;
       }
+      const periodHeader = `${startLabel}～${endLabel}　　${e(companyDisplay)}`;
 
       const dutiesList = (c.duties || []).filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
       const achievementsList = (c.achievements || []).filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
 
       careerBlocks += `
       <div class="career-block">
-        <div class="career-period-header">${e(periodHeader)}</div>
-        ${dispatchLine}
+        <div class="career-period-header">${periodHeader}</div>
+        ${dispatchBlock}
         <table class="company-info-table">
           <tr>
             <td class="company-details">

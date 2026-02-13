@@ -320,17 +320,21 @@ const App = (() => {
     const eduItems = educationData.filter((x) => x.type === '学歴');
     const workItems = educationData.filter((x) => x.type === '職歴');
 
-    eduContainer.innerHTML = eduItems.map((item) => educationEntryHTML(item)).join('');
-    workContainer.innerHTML = workItems.map((item) => educationEntryHTML(item)).join('');
+    eduContainer.innerHTML = eduItems.map((item, i) => educationEntryHTML(item, i, eduItems.length)).join('');
+    workContainer.innerHTML = workItems.map((item, i) => educationEntryHTML(item, i, workItems.length)).join('');
 
     // イベント設定
-    eduContainer.querySelectorAll('.entry-row').forEach(setupEntryEvents);
-    workContainer.querySelectorAll('.entry-row').forEach(setupEntryEvents);
+    eduContainer.querySelectorAll('.entry-row').forEach((row) => setupEntryEvents(row, '学歴'));
+    workContainer.querySelectorAll('.entry-row').forEach((row) => setupEntryEvents(row, '職歴'));
   }
 
-  function educationEntryHTML(item) {
+  function educationEntryHTML(item, index, total) {
     return `
     <div class="entry-row" data-id="${item.id}">
+      <div class="entry-actions">
+        <button class="btn-move btn-move-up" title="上へ" ${index === 0 ? 'disabled' : ''}>▲</button>
+        <button class="btn-move btn-move-down" title="下へ" ${index === total - 1 ? 'disabled' : ''}>▼</button>
+      </div>
       <input type="number" class="input-year" value="${item.year || ''}" placeholder="年" min="1950" max="2100">
       <input type="number" class="input-month" value="${item.month || ''}" placeholder="月" min="1" max="12">
       <input type="text" class="input-content" value="${Utils.escapeHtml(item.content || '')}" placeholder="内容">
@@ -338,7 +342,7 @@ const App = (() => {
     </div>`;
   }
 
-  function setupEntryEvents(row) {
+  function setupEntryEvents(row, type) {
     const id = Number(row.dataset.id);
     const inputs = row.querySelectorAll('input');
     inputs.forEach((input) => {
@@ -358,6 +362,35 @@ const App = (() => {
       educationData = await DB.loadEducation();
       renderEducationList();
     });
+
+    // 並び替え
+    const btnUp = row.querySelector('.btn-move-up');
+    const btnDown = row.querySelector('.btn-move-down');
+    if (btnUp) {
+      btnUp.addEventListener('click', async () => {
+        await swapEducationOrder(id, type, -1);
+      });
+    }
+    if (btnDown) {
+      btnDown.addEventListener('click', async () => {
+        await swapEducationOrder(id, type, 1);
+      });
+    }
+  }
+
+  async function swapEducationOrder(id, type, direction) {
+    const items = educationData.filter((x) => x.type === type);
+    const idx = items.findIndex((x) => x.id === id);
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= items.length) return;
+    // swap order values
+    const tmpOrder = items[idx].order;
+    items[idx].order = items[targetIdx].order;
+    items[targetIdx].order = tmpOrder;
+    await DB.saveEducation(items[idx]);
+    await DB.saveEducation(items[targetIdx]);
+    educationData = await DB.loadEducation();
+    renderEducationList();
   }
 
   async function addEducationEntry(type) {
@@ -398,7 +431,11 @@ const App = (() => {
     <div class="career-entry-card" data-id="${career.id}">
       <div class="career-entry-header">
         <span class="career-entry-num">職務経歴 ${index + 1}</span>
-        <button class="btn-delete btn-delete-career" title="削除">✕</button>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <button class="btn-move btn-move-up-career" title="上へ" ${index === 0 ? 'disabled' : ''}>▲</button>
+          <button class="btn-move btn-move-down-career" title="下へ" ${index === careerData.length - 1 ? 'disabled' : ''}>▼</button>
+          <button class="btn-delete btn-delete-career" title="削除">✕</button>
+        </div>
       </div>
 
       <div class="form-row">
@@ -479,12 +516,12 @@ const App = (() => {
 
       <div class="form-row">
         <div class="form-group">
-          <label>派遣先（派遣の場合）</label>
-          <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先企業名">
+          <label>派遣先企業名（派遣の場合）</label>
+          <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
         </div>
         <div class="form-group">
-          <label>派遣元</label>
-          <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣元企業名">
+          <label>派遣会社名（派遣元）</label>
+          <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
         </div>
       </div>
 
@@ -564,6 +601,12 @@ const App = (() => {
       renderCareerList();
     });
 
+    // カード並び替え
+    const btnUpCareer = card.querySelector('.btn-move-up-career');
+    const btnDownCareer = card.querySelector('.btn-move-down-career');
+    if (btnUpCareer) btnUpCareer.addEventListener('click', () => swapCareerOrder(id, -1));
+    if (btnDownCareer) btnDownCareer.addEventListener('click', () => swapCareerOrder(id, 1));
+
     // 業務内容の追加
     card.querySelector('.btn-add-duty').addEventListener('click', async () => {
       const entry = careerData.find((x) => x.id === id);
@@ -638,14 +681,31 @@ const App = (() => {
     renderCareerList();
   }
 
+  async function swapCareerOrder(id, direction) {
+    const idx = careerData.findIndex((x) => x.id === id);
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= careerData.length) return;
+    const tmpOrder = careerData[idx].order;
+    careerData[idx].order = careerData[targetIdx].order;
+    careerData[targetIdx].order = tmpOrder;
+    await DB.saveCareer(careerData[idx]);
+    await DB.saveCareer(careerData[targetIdx]);
+    careerData = await DB.loadCareer();
+    renderCareerList();
+  }
+
   // ================================================================
   // 資格・免許
   // ================================================================
   function renderQualificationsList() {
     const container = document.getElementById('qual-list');
     if (!container) return;
-    container.innerHTML = qualificationsData.map((q) => `
+    container.innerHTML = qualificationsData.map((q, i) => `
     <div class="entry-row" data-id="${q.id}">
+      <div class="entry-actions">
+        <button class="btn-move btn-move-up" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
+        <button class="btn-move btn-move-down" title="下へ" ${i === qualificationsData.length - 1 ? 'disabled' : ''}>▼</button>
+      </div>
       <input type="number" class="input-year" value="${q.year || ''}" placeholder="年" min="1950" max="2100">
       <input type="number" class="input-month" value="${q.month || ''}" placeholder="月" min="1" max="12">
       <input type="text" class="input-content" value="${Utils.escapeHtml(q.content || '')}" placeholder="資格名">
@@ -671,7 +731,26 @@ const App = (() => {
         qualificationsData = await DB.loadQualifications();
         renderQualificationsList();
       });
+
+      // 並び替え
+      const btnUp = row.querySelector('.btn-move-up');
+      const btnDown = row.querySelector('.btn-move-down');
+      if (btnUp) btnUp.addEventListener('click', () => swapQualificationOrder(id, -1));
+      if (btnDown) btnDown.addEventListener('click', () => swapQualificationOrder(id, 1));
     });
+  }
+
+  async function swapQualificationOrder(id, direction) {
+    const idx = qualificationsData.findIndex((x) => x.id === id);
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= qualificationsData.length) return;
+    const tmpOrder = qualificationsData[idx].order;
+    qualificationsData[idx].order = qualificationsData[targetIdx].order;
+    qualificationsData[targetIdx].order = tmpOrder;
+    await DB.saveQualification(qualificationsData[idx]);
+    await DB.saveQualification(qualificationsData[targetIdx]);
+    qualificationsData = await DB.loadQualifications();
+    renderQualificationsList();
   }
 
   async function addQualificationEntry() {
@@ -802,6 +881,8 @@ const App = (() => {
       <div class="skill-entry-header">
         <span class="skill-num">${circled[i] || (i + 1)}</span>
         <input type="text" class="skill-title-input" value="${Utils.escapeHtml(s.title || '')}" placeholder="スキルタイトル">
+        <button class="btn-move btn-move-up-skill" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
+        <button class="btn-move btn-move-down-skill" title="下へ" ${i === skills.length - 1 ? 'disabled' : ''}>▼</button>
         <button type="button" class="btn-delete btn-delete-skill" title="削除">✕</button>
       </div>
       <textarea class="skill-desc-input" placeholder="説明">${Utils.escapeHtml(s.description || '')}</textarea>
@@ -815,9 +896,42 @@ const App = (() => {
         const idx = Number(btn.closest('.skill-entry').dataset.index);
         const app = applicationsData.find((a) => a.id === currentAppId);
         if (!app || !app.skills) return;
-        // まず現在の入力値を収集してから削除
         app.skills = collectSkills();
         app.skills.splice(idx, 1);
+        await DB.saveApplication(app);
+        applicationsData = await DB.loadApplications();
+        const updatedApp = applicationsData.find((a) => a.id === currentAppId);
+        renderSkillsList(updatedApp?.skills || []);
+      });
+    });
+
+    // スキル移動イベント
+    container.querySelectorAll('.btn-move-up-skill').forEach((btn) => {
+      btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const idx = Number(btn.closest('.skill-entry').dataset.index);
+        if (idx <= 0) return;
+        const app = applicationsData.find((a) => a.id === currentAppId);
+        if (!app || !app.skills) return;
+        app.skills = collectSkills();
+        [app.skills[idx - 1], app.skills[idx]] = [app.skills[idx], app.skills[idx - 1]];
+        await DB.saveApplication(app);
+        applicationsData = await DB.loadApplications();
+        const updatedApp = applicationsData.find((a) => a.id === currentAppId);
+        renderSkillsList(updatedApp?.skills || []);
+      });
+    });
+    container.querySelectorAll('.btn-move-down-skill').forEach((btn) => {
+      btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const idx = Number(btn.closest('.skill-entry').dataset.index);
+        const app = applicationsData.find((a) => a.id === currentAppId);
+        if (!app || !app.skills) return;
+        app.skills = collectSkills();
+        if (idx >= app.skills.length - 1) return;
+        [app.skills[idx], app.skills[idx + 1]] = [app.skills[idx + 1], app.skills[idx]];
         await DB.saveApplication(app);
         applicationsData = await DB.loadApplications();
         const updatedApp = applicationsData.find((a) => a.id === currentAppId);

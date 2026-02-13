@@ -183,7 +183,7 @@ body {
   margin-bottom: 4px;
 }
 
-.form-group input,
+.form-group input:not([type="checkbox"]):not([type="radio"]),
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -198,7 +198,7 @@ body {
   -webkit-appearance: none;
 }
 
-.form-group input:focus,
+.form-group input:not([type="checkbox"]):not([type="radio"]):focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
@@ -279,6 +279,9 @@ body {
   height: 18px;
   accent-color: var(--primary);
   cursor: pointer;
+  -webkit-appearance: checkbox;
+  appearance: checkbox;
+  flex-shrink: 0;
 }
 
 /* ヒントテキスト */
@@ -341,6 +344,45 @@ body {
 
 .btn-delete:hover {
   background: rgba(220,38,38,0.1);
+}
+
+/* 並び替えボタン */
+.entry-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-move {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  font-size: 11px;
+  cursor: pointer;
+  width: 26px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-move:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-move:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: none;
+  color: var(--text-light);
+  border-color: var(--border);
 }
 
 .btn-add {
@@ -444,7 +486,7 @@ body {
   margin-bottom: 3px;
 }
 
-.career-entry-card input,
+.career-entry-card input:not([type="checkbox"]):not([type="radio"]),
 .career-entry-card select,
 .career-entry-card textarea {
   width: 100%;
@@ -654,7 +696,7 @@ body {
 }
 
 .resume-name-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 4px 8px;
   vertical-align: top;
 }
@@ -667,7 +709,7 @@ body {
 }
 
 .resume-birth-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 4px 8px;
 }
 
@@ -679,7 +721,7 @@ body {
 }
 
 .resume-info-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 4px 8px;
   vertical-align: top;
 }
@@ -755,9 +797,10 @@ body {
 
 .history-table th,
 .history-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 3px 8px;
   font-size: 10pt;
+  height: 1.8em;
 }
 
 .history-table th {
@@ -782,7 +825,7 @@ body {
 
 /* 志望動機セクション */
 .motivation-section {
-  border: 1px solid #333;
+  border: 1px solid #000;
   margin-top: 4px;
 }
 
@@ -790,7 +833,7 @@ body {
   padding: 4px 8px;
   font-size: 10pt;
   background: #f9f9f9;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #000;
 }
 
 .motivation-body {
@@ -815,7 +858,7 @@ body {
 
 /* 本人希望 */
 .request-section {
-  border: 1px solid #333;
+  border: 1px solid #000;
   margin-top: 4px;
 }
 
@@ -823,7 +866,7 @@ body {
   padding: 4px 8px;
   font-size: 9pt;
   background: #f9f9f9;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #000;
 }
 
 .request-body {
@@ -894,6 +937,17 @@ body {
   padding-left: 1em;
 }
 
+.career-dispatch-info {
+  font-size: 10pt;
+  margin-bottom: 6px;
+  padding-left: 1em;
+  line-height: 1.6;
+}
+
+.career-dispatch-line {
+  margin-bottom: 2px;
+}
+
 .company-info-table {
   width: 100%;
   border-collapse: collapse;
@@ -901,7 +955,7 @@ body {
 }
 
 .company-info-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 6px 8px;
   font-size: 10pt;
   vertical-align: top;
@@ -956,7 +1010,7 @@ body {
 }
 
 .qual-table td {
-  border: 1px solid #333;
+  border: 1px solid #000;
   padding: 4px 12px;
   font-size: 10pt;
 }
