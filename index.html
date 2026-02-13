@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="履歴書・職務経歴書をオフラインで作成・PDF出力するPWAアプリ">
+  <title>履歴書メーカー</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ========== ヘッダー ========== -->
+  <header class="app-header">
+    <span class="app-title">📄 履歴書メーカー</span>
+    <nav class="header-nav">
+      <button class="nav-btn active" id="btn-input">入力</button>
+      <button class="nav-btn" id="btn-preview">プレビュー</button>
+      <button class="menu-btn" id="btn-menu">☰</button>
+    </nav>
+    <!-- ドロップダウンメニュー -->
+    <div class="dropdown-menu hidden" id="dropdown-menu">
+      <button id="btn-export-json">📥 JSONエクスポート</button>
+      <button id="btn-import-json">📤 JSONインポート</button>
+      <button id="btn-export-csv">📥 CSVエクスポート</button>
+      <button id="btn-import-csv">📤 CSVインポート</button>
+    </div>
+  </header>
+
+  <!-- ========== 入力画面 ========== -->
+  <div id="input-screen">
+    <!-- タブナビ -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="profile">基本情報</button>
+      <button class="tab-btn" data-tab="education">学歴・職歴</button>
+      <button class="tab-btn" data-tab="qualifications">資格</button>
+      <button class="tab-btn" data-tab="applications">応募先</button>
+    </nav>
+
+    <!-- ===== 基本情報タブ ===== -->
+    <div class="tab-content active" id="tab-profile">
+      <form id="profile-form" autocomplete="off">
+
+        <h3 class="section-title">氏名</h3>
+        <div class="form-group">
+          <label for="nameKana">ふりがな</label>
+          <input type="text" name="nameKana" id="nameKana" placeholder="やまだ たろう">
+        </div>
+        <div class="form-group">
+          <label for="name">氏名</label>
+          <input type="text" name="name" id="name" placeholder="山田 太郎">
+        </div>
+
+        <h3 class="section-title">基本情報</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthDate">生年月日</label>
+            <input type="date" name="birthDate" id="birthDate">
+          </div>
+          <div class="form-group">
+            <label for="gender">性別（任意）</label>
+            <input type="text" name="gender" id="gender" placeholder="女">
+          </div>
+        </div>
+
+        <h3 class="section-title">証明写真</h3>
+        <div class="photo-upload-area">
+          <div class="photo-preview-box">
+            <img id="photo-preview" class="hidden" alt="証明写真">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="photo-input">写真を選択</label>
+            <input type="file" id="photo-input" accept="image/*" capture="environment">
+          </div>
+        </div>
+
+        <h3 class="section-title">現住所</h3>
+        <div class="form-group">
+          <label for="addressKana">住所ふりがな</label>
+          <input type="text" name="addressKana" id="addressKana" placeholder="とうきょうとちよだくちよだ...">
+        </div>
+        <div class="form-group">
+          <label for="postalCode">郵便番号</label>
+          <input type="text" name="postalCode" id="postalCode" placeholder="100-0001">
+        </div>
+        <div class="form-group">
+          <label for="address">住所</label>
+          <input type="text" name="address" id="address" placeholder="東京都千代田区千代田1-1">
+        </div>
+
+        <h3 class="section-title">連絡先</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">電話番号</label>
+            <input type="tel" name="phone" id="phone" placeholder="090-1234-5678">
+          </div>
+          <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" name="email" id="email" placeholder="example@gmail.com">
+          </div>
+        </div>
+
+        <h3 class="section-title">連絡先（別住所の場合のみ）</h3>
+        <div class="form-group">
+          <label for="contactAddressKana">住所ふりがな</label>
+          <input type="text" name="contactAddressKana" id="contactAddressKana">
+        </div>
+        <div class="form-group">
+          <label for="contactPostalCode">郵便番号</label>
+          <input type="text" name="contactPostalCode" id="contactPostalCode">
+        </div>
+        <div class="form-group">
+          <label for="contactAddress">住所</label>
+          <input type="text" name="contactAddress" id="contactAddress">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contactPhone">電話番号</label>
+            <input type="tel" name="contactPhone" id="contactPhone">
+          </div>
+          <div class="form-group">
+            <label for="contactEmail">メールアドレス</label>
+            <input type="email" name="contactEmail" id="contactEmail">
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ===== 学歴・職歴タブ ===== -->
+    <div class="tab-content" id="tab-education">
+      <h3 class="section-title">学歴</h3>
+      <div id="edu-list"></div>
+      <button class="btn-add" id="btn-add-edu">＋ 学歴を追加</button>
+
+      <h3 class="section-title">職歴</h3>
+      <div id="work-list"></div>
+      <button class="btn-add" id="btn-add-work">＋ 職歴を追加</button>
+    </div>
+
+    <!-- ===== 資格タブ ===== -->
+    <div class="tab-content" id="tab-qualifications">
+      <h3 class="section-title">資格・免許</h3>
+      <div id="qual-list"></div>
+      <button class="btn-add" id="btn-add-qual">＋ 資格を追加</button>
+    </div>
+
+    <!-- ===== 応募先管理タブ ===== -->
+    <div class="tab-content" id="tab-applications">
+      <h3 class="section-title">応募先選択</h3>
+      <div class="app-selector-row">
+        <select id="app-selector"></select>
+        <button class="btn-sm btn-primary" id="btn-add-app">＋ 新規</button>
+        <button class="btn-sm btn-success" id="btn-copy-app">📋 コピー</button>
+        <button class="btn-sm btn-danger" id="btn-delete-app" disabled>🗑 削除</button>
+      </div>
+
+      <form id="application-form" autocomplete="off">
+        <h3 class="section-title">応募先情報</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="app-companyName">企業名</label>
+            <input type="text" name="companyName" id="app-companyName" placeholder="応募先企業名">
+          </div>
+          <div class="form-group">
+            <label for="app-submissionDate">提出日</label>
+            <input type="date" name="submissionDate" id="app-submissionDate">
+          </div>
+        </div>
+
+        <h3 class="section-title">履歴書 — 志望動機・自己PR</h3>
+        <div class="form-group">
+          <label for="app-motivation">【志望理由】</label>
+          <textarea name="motivation" id="app-motivation" rows="6" placeholder="志望理由を入力..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="app-selfPR">【自己PR】</label>
+          <textarea name="selfPR" id="app-selfPR" rows="6" placeholder="自己PRを入力..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="app-personalRequest">本人希望記入欄</label>
+          <textarea name="personalRequest" id="app-personalRequest" rows="3" placeholder="勤務形態・条件等については貴社の規定に従います。"></textarea>
+        </div>
+
+        <h3 class="section-title">職務経歴書 — 職務要約</h3>
+        <div class="form-group">
+          <label for="app-careerSummary">職務要約</label>
+          <textarea name="careerSummary" id="app-careerSummary" rows="6" placeholder="職務要約を入力..."></textarea>
+        </div>
+
+        <h3 class="section-title">職務経歴書 — 活かせるスキル・強み</h3>
+        <div id="skills-list"></div>
+        <button type="button" class="btn-add" id="btn-add-skill">＋ スキルを追加</button>
+
+        <h3 class="section-title">職務経歴書 — 志望動機</h3>
+        <div class="form-group">
+          <label for="app-careerMotivation">志望動機（経歴書用）</label>
+          <textarea name="careerMotivation" id="app-careerMotivation" rows="6" placeholder="職務経歴書用の志望動機..."></textarea>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== プレビュー画面 ========== -->
+  <div id="preview-screen" class="hidden">
+    <div class="preview-toolbar">
+      <select id="preview-app-selector"></select>
+      <button class="btn-sm btn-primary" id="btn-pdf-resume">📄 履歴書PDF</button>
+      <button class="btn-sm btn-primary" id="btn-pdf-career">📄 経歴書PDF</button>
+      <button class="btn-sm btn-success" id="btn-pdf-all">📄 一括PDF</button>
+      <button class="btn-sm" id="btn-back-input" style="background:#64748b;color:white;">← 戻る</button>
+    </div>
+    <div id="preview-area"></div>
+  </div>
+
+  <!-- PDF生成用非表示エリア -->
+  <div id="pdf-render-area"></div>
+
+  <!-- ========== Scripts ========== -->
+  <!-- CDN: jsPDF + html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- App modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/csv-handler.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/pdf-generator.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Service Worker 登録 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+    }
+  </script>
+</body>
+</html>

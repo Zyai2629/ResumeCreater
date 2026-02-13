@@ -1,0 +1,12 @@
+# サンプルファイル（個人情報を含むため除外）
+sample/
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# エディタ
+.vscode/
+*.swp
+*.swo

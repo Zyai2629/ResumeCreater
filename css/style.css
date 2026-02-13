@@ -1,0 +1,962 @@
+/* ============================================================
+   style.css — スタイル（A4レイアウト・フォーム・レスポンシブ）
+   ============================================================ */
+
+/* ============ リセット & ベース ============ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --bg: #f8fafc;
+  --bg-white: #ffffff;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --accent: #059669;
+  --error: #dc2626;
+  --border: #e2e8f0;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --font: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+  --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ============ ヘッダー ============ */
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.app-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.header-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.nav-btn.active {
+  background: rgba(255,255,255,0.4);
+  font-weight: 700;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============ ドロップダウンメニュー ============ */
+.dropdown-menu {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 200;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  border: none;
+  background: none;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.dropdown-menu button:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu button:hover {
+  background: var(--bg);
+}
+
+/* ============ タブナビ ============ */
+.tab-nav {
+  display: flex;
+  background: white;
+  border-bottom: 2px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 12px 8px;
+  text-align: center;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  min-height: 44px;
+  transition: color 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px 3px 0 0;
+}
+
+/* ============ タブコンテンツ ============ */
+.tab-content {
+  display: none;
+  padding: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ============ フォーム ============ */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 16px; /* iOS ズーム防止 */
+  font-family: var(--font);
+  background: white;
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.section-title:first-child {
+  margin-top: 0;
+}
+
+/* 写真プレビュー */
+.photo-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.photo-preview-box {
+  width: 90px;
+  height: 120px;
+  border: 2px dashed var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.photo-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-preview-box img.hidden {
+  display: none;
+}
+
+/* ============ エントリリスト ============ */
+.entry-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.entry-row .input-year {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.entry-row .input-month {
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.entry-row .input-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-row input {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--error);
+  font-size: 18px;
+  cursor: pointer;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-delete:hover {
+  background: rgba(220,38,38,0.1);
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.btn-add:hover {
+  background: var(--primary-dark);
+}
+
+/* ============ 応募先管理 ============ */
+.app-selector-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.app-selector-row select {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-family: var(--font);
+  background: white;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: background 0.2s;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--accent); color: white; }
+.btn-danger { background: var(--error); color: white; }
+.btn-danger:disabled { background: #ccc; cursor: default; }
+
+/* スキル・強み */
+.skill-entry {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.skill-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.skill-num {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.skill-title-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+.skill-desc-input {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font);
+  resize: vertical;
+}
+
+/* ============ プレビュー画面 ============ */
+.preview-toolbar {
+  background: white;
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 56px;
+  z-index: 50;
+}
+
+.preview-toolbar select {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.preview-toolbar .btn-sm {
+  font-size: 12px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+#preview-area {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ============ A4ページ（プレビュー・PDF用） ============ */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm 20mm;
+  background: white;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  font-family: var(--font-serif);
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============ 履歴書スタイル ============ */
+.resume-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.resume-title {
+  font-size: 22pt;
+  font-weight: 700;
+  margin-right: auto;
+}
+
+.resume-date {
+  font-size: 11pt;
+  position: absolute;
+  right: 120px;
+  top: 8px;
+}
+
+.photo-box {
+  width: 30mm;
+  height: 40mm;
+  border: 1px dashed #999;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  color: #999;
+}
+
+/* 履歴書テーブル */
+.resume-info-table {
+  width: calc(100% - 35mm);
+  border-collapse: collapse;
+  margin-bottom: 2px;
+}
+
+.resume-info-table td {
+  border: 1px solid #333;
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+.label-cell {
+  background: #f9f9f9;
+  font-size: 9pt;
+  width: 70px;
+}
+
+.furigana-label {
+  font-size: 8pt;
+  color: #666;
+}
+
+.furigana {
+  font-size: 8pt;
+  color: #666;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.name-value {
+  font-size: 16pt;
+  font-weight: 700;
+}
+
+.name-cell {
+  min-width: 200px;
+}
+
+.gender-cell {
+  width: 80px;
+  font-size: 9pt;
+  text-align: center;
+}
+
+.gender-note {
+  font-size: 8pt;
+  color: #666;
+}
+
+.birth-cell {
+  text-align: center;
+  font-size: 11pt;
+  padding: 6px;
+}
+
+.address-table {
+  width: 100%;
+}
+
+.address-cell {
+  min-width: 200px;
+}
+
+.contact-info-cell {
+  font-size: 9pt;
+  width: 200px;
+}
+
+.contact-note {
+  font-size: 7pt;
+  color: #999;
+}
+
+/* 学歴・職歴テーブル */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+}
+
+.history-table th,
+.history-table td {
+  border: 1px solid #333;
+  padding: 3px 8px;
+  font-size: 10pt;
+}
+
+.history-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+  font-size: 10pt;
+  text-align: center;
+}
+
+.history-table .center {
+  text-align: center;
+}
+
+.history-table .bold {
+  font-weight: 600;
+}
+
+/* 資格テーブル */
+.qualification-table {
+  margin-top: 4px;
+}
+
+/* 志望動機セクション */
+.motivation-section {
+  border: 1px solid #333;
+  margin-top: 4px;
+}
+
+.motivation-header {
+  padding: 4px 8px;
+  font-size: 10pt;
+  background: #f9f9f9;
+  border-bottom: 1px solid #333;
+}
+
+.motivation-body {
+  padding: 8px;
+  min-height: 150px;
+  font-size: 10pt;
+}
+
+.section-label {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.section-text {
+  text-indent: 1em;
+  margin-bottom: 8px;
+}
+
+/* 本人希望 */
+.request-section {
+  border: 1px solid #333;
+  margin-top: 4px;
+}
+
+.request-header {
+  padding: 4px 8px;
+  font-size: 9pt;
+  background: #f9f9f9;
+  border-bottom: 1px solid #333;
+}
+
+.request-body {
+  padding: 8px;
+  min-height: 60px;
+  font-size: 10pt;
+}
+
+.gender-note-bottom {
+  font-size: 8pt;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* ============ 職務経歴書スタイル ============ */
+.career-title {
+  text-align: center;
+  font-size: 20pt;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  margin-bottom: 16px;
+}
+
+.career-meta {
+  text-align: right;
+  margin-bottom: 16px;
+  font-size: 11pt;
+}
+
+.career-meta div {
+  margin-bottom: 4px;
+}
+
+.career-section {
+  margin-bottom: 16px;
+}
+
+.career-section-title {
+  font-size: 12pt;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.career-summary-text {
+  font-size: 10pt;
+  text-indent: 1em;
+  line-height: 1.7;
+}
+
+.career-block {
+  margin-bottom: 16px;
+  page-break-inside: avoid;
+}
+
+.career-period-header {
+  font-size: 11pt;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.career-dispatch {
+  font-size: 10pt;
+  margin-bottom: 4px;
+  padding-left: 1em;
+}
+
+.company-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+
+.company-info-table td {
+  border: 1px solid #333;
+  padding: 6px 8px;
+  font-size: 10pt;
+  vertical-align: top;
+}
+
+.company-details {
+  width: 75%;
+}
+
+.position-cell {
+  width: 25%;
+  text-align: center;
+}
+
+.career-department {
+  font-size: 10pt;
+  margin-bottom: 4px;
+}
+
+.career-details {
+  padding-left: 2em;
+  font-size: 10pt;
+}
+
+.detail-section {
+  margin-bottom: 8px;
+}
+
+.detail-label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.career-details ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin: 0;
+}
+
+.career-details li {
+  margin-bottom: 2px;
+}
+
+/* 職務経歴書 資格テーブル */
+.qual-table {
+  border-collapse: collapse;
+  width: auto;
+  margin-bottom: 8px;
+}
+
+.qual-table td {
+  border: 1px solid #333;
+  padding: 4px 12px;
+  font-size: 10pt;
+}
+
+.qual-name { min-width: 200px; }
+.qual-date { min-width: 140px; }
+
+/* スキル項目 */
+.skill-item {
+  margin-bottom: 12px;
+}
+
+.skill-item .skill-title {
+  font-weight: 700;
+  font-size: 11pt;
+  margin-bottom: 2px;
+}
+
+.skill-item .skill-desc {
+  font-size: 10pt;
+  line-height: 1.6;
+}
+
+.career-motivation-text {
+  font-size: 10pt;
+  text-indent: 1em;
+  line-height: 1.7;
+}
+
+.career-end {
+  text-align: right;
+  font-size: 11pt;
+  margin-top: 24px;
+}
+
+.page-number {
+  position: absolute;
+  bottom: 10mm;
+  right: 20mm;
+  font-size: 10pt;
+  color: #666;
+}
+
+/* ============ PDF レンダリングエリア ============ */
+#pdf-render-area {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: -1;
+}
+
+/* ============ トースト ============ */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  color: white;
+  font-size: 14px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-success { background: var(--accent); }
+.toast-error { background: var(--error); }
+.toast-info { background: var(--primary); }
+
+/* ============ ユーティリティ ============ */
+.hidden {
+  display: none !important;
+}
+
+/* ============ レスポンシブ ============ */
+@media (max-width: 768px) {
+  .a4-page {
+    width: 100%;
+    min-height: auto;
+    padding: 8mm 10mm;
+    font-size: 9pt;
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+
+  .resume-title { font-size: 18pt; }
+  .career-title { font-size: 16pt; }
+  .name-value { font-size: 14pt; }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .preview-toolbar {
+    top: 56px;
+  }
+
+  .photo-box {
+    width: 25mm;
+    height: 33mm;
+  }
+
+  .resume-info-table {
+    width: 100%;
+  }
+
+  .resume-date {
+    position: static;
+    display: block;
+    text-align: right;
+    margin-bottom: 4px;
+  }
+
+  .contact-info-cell {
+    width: 150px;
+  }
+}
+
+@media (max-width: 375px) {
+  .tab-btn {
+    font-size: 12px;
+    padding: 10px 4px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+
+  .entry-row {
+    flex-wrap: wrap;
+  }
+
+  .entry-row .input-content {
+    width: 100%;
+  }
+}
+
+/* ============ 印刷用 ============ */
+@media print {
+  body { background: white; }
+  .app-header, .tab-nav, .preview-toolbar, .toast { display: none; }
+  .a4-page {
+    box-shadow: none;
+    margin: 0;
+    padding: 15mm 20mm;
+    page-break-after: always;
+  }
+}
