@@ -493,6 +493,24 @@ const App = (() => {
         <input type="text" class="career-company" value="${Utils.escapeHtml(career.companyName || '')}" placeholder="会社名">
       </div>
 
+      <label class="checkbox-label" style="margin-bottom:8px;">
+        <input type="checkbox" class="career-is-dispatch" ${career.isDispatch ? 'checked' : ''}>
+        <span>派遣として勤務</span>
+      </label>
+
+      <div class="dispatch-fields" style="${career.isDispatch ? '' : 'display:none;'}">
+        <div class="form-row">
+          <div class="form-group">
+            <label>派遣会社名（派遣元）</label>
+            <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
+          </div>
+          <div class="form-group">
+            <label>派遣先企業名（派遣の場合）</label>
+            <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>事業内容</label>
         <input type="text" class="career-business" value="${Utils.escapeHtml(career.businessContent || '')}" placeholder="事業内容">
@@ -547,24 +565,6 @@ const App = (() => {
       <div class="form-group">
         <label>配属部署</label>
         <input type="text" class="career-department" value="${Utils.escapeHtml(career.department || '')}" placeholder="例: 開発部">
-      </div>
-
-      <label class="checkbox-label" style="margin-bottom:8px;">
-        <input type="checkbox" class="career-is-dispatch" ${career.isDispatch ? 'checked' : ''}>
-        <span>派遣として勤務</span>
-      </label>
-
-      <div class="dispatch-fields" style="${career.isDispatch ? '' : 'display:none;'}">
-        <div class="form-row">
-          <div class="form-group">
-            <label>派遣会社名（派遣元）</label>
-            <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
-          </div>
-          <div class="form-group">
-            <label>派遣先企業名</label>
-            <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
-          </div>
-        </div>
       </div>
 
       <h3 class="section-title">業務内容</h3>

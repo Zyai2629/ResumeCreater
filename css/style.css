@@ -635,19 +635,24 @@ body {
 .a4-page {
   width: 210mm;
   min-height: 297mm;
-  padding: 12mm 15mm 18mm 15mm;
   background: white;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
   font-family: var(--font-serif);
-  font-size: 10.5pt;
+  font-size: 10pt;
   line-height: 1.4;
   color: #000;
   position: relative;
   overflow: hidden;
 }
 
-/* 職務経歴書ページ：以上をページ下部に配置 */
+/* 履歴書ページ：左右均等の余白 */
+.resume-page {
+  padding: 14mm 13mm 16mm 13mm;
+}
+
+/* 職務経歴書ページ：左広め・右狭めの余白 */
 .career-page {
+  padding: 18mm 11mm 19mm 20mm;
   display: flex;
   flex-direction: column;
 }
@@ -900,9 +905,9 @@ body {
 /* ============ 職務経歴書スタイル ============ */
 .career-title {
   text-align: center;
-  font-size: 18pt;
+  font-size: 14pt;
   font-weight: 700;
-  letter-spacing: 0.5em;
+  letter-spacing: 0.3em;
   margin-bottom: 12px;
 }
 
@@ -921,13 +926,13 @@ body {
 }
 
 .career-section-title {
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 700;
   margin-bottom: 6px;
 }
 
 .career-summary-text {
-  font-size: 9.5pt;
+  font-size: 10pt;
   text-indent: 1em;
   line-height: 1.6;
   text-align: justify;
@@ -940,11 +945,11 @@ body {
 }
 
 .career-period-header {
-  font-size: 10.5pt;
+  font-size: 10pt;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 0;
   padding: 4px 0;
-  border-bottom: 2px solid #000;
+  border-bottom: 1px solid #000;
 }
 
 .career-dispatch {
@@ -967,34 +972,65 @@ body {
 .company-info-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 6px;
-  border: 2px solid #000;
+  margin-bottom: 0;
+  border: 1px solid #000;
+  border-bottom: none;
 }
 
 .company-info-table td {
   border: 1px solid #000;
   padding: 4px 6px;
-  font-size: 9.5pt;
+  font-size: 10pt;
   vertical-align: top;
 }
 
 .company-details {
-  width: 75%;
+  width: 85%;
 }
 
 .position-cell {
-  width: 25%;
+  width: 15%;
   text-align: center;
+  font-size: 10pt;
+}
+
+/* 期間＋職務内容テーブル */
+.career-duties-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  border: 1px solid #000;
+}
+
+.career-duties-table td {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  font-size: 10pt;
+  vertical-align: top;
+}
+
+.period-col {
+  width: 70px;
+  text-align: center;
+  vertical-align: top;
+  white-space: nowrap;
+  font-size: 10pt;
+}
+
+.duties-col {
+  vertical-align: top;
 }
 
 .career-department {
-  font-size: 9.5pt;
+  font-size: 10pt;
   margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #000;
 }
 
 .career-details {
-  padding-left: 2em;
-  font-size: 9.5pt;
+  padding-left: 0;
+  font-size: 10pt;
   text-align: justify;
   text-justify: inter-ideograph;
 }
@@ -1024,13 +1060,13 @@ body {
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 6px;
-  border: 2px solid #000;
+  border: 1px solid #000;
 }
 
 .qual-table td {
   border: 1px solid #000;
   padding: 3px 8px;
-  font-size: 9.5pt;
+  font-size: 10pt;
 }
 
 .qual-name { min-width: 200px; }
@@ -1043,7 +1079,7 @@ body {
 
 .skill-item .skill-title {
   font-weight: 700;
-  font-size: 11pt;
+  font-size: 10pt;
   margin-bottom: 2px;
 }
 
@@ -1055,7 +1091,7 @@ body {
 }
 
 .career-motivation-text {
-  font-size: 9.5pt;
+  font-size: 10pt;
   text-indent: 1em;
   line-height: 1.6;
   text-align: justify;
@@ -1064,21 +1100,20 @@ body {
 
 .career-end {
   text-align: right;
-  font-size: 10.5pt;
-  margin-top: auto;
-  padding-top: 20px;
-  padding-right: 2em;
+  font-size: 9pt;
+  margin-top: 20px;
+  padding-right: 0;
 }
 
-/* ページ番号 */
+/* ページ番号（職務経歴書のみ・右寄せ） */
 .page-number {
   position: absolute;
-  bottom: 8mm;
+  bottom: 10mm;
   left: 0;
   right: 0;
-  text-align: center;
-  font-size: 9pt;
-  color: #333;
+  text-align: right;
+  font-size: 10.5pt;
+  color: #000;
   font-family: var(--font-serif);
 }
 
@@ -1137,8 +1172,7 @@ body {
   #preview-area .a4-page {
     width: 210mm;
     min-height: 297mm;
-    padding: 12mm 15mm 18mm 15mm;
-    font-size: 10.5pt;
+    font-size: 10pt;
     box-shadow: none;
     border: 1px solid #ccc;
     transform-origin: top left;

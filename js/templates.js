@@ -151,7 +151,6 @@ const Templates = (() => {
       ${Array(Math.max(0, maxRows - page1Rows.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
-  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
@@ -228,7 +227,6 @@ const Templates = (() => {
   </div>
 
   <div class="gender-note-bottom">※「性別」欄：記載は任意です。未記載とすることも可能です。</div>
-  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
@@ -244,31 +242,25 @@ const Templates = (() => {
       const startLabel = Utils.formatYearMonth(c.startDate);
       const endLabel = c.endDate === '現在' ? '現在' : Utils.formatYearMonth(c.endDate);
 
-      // 派遣の場合は派遣元（派遣会社）名、派遣先企業名を表示
-      let companyDisplay = c.companyName;
-      let dispatchBlock = '';
+      // 期間ヘッダー：派遣の場合は派遣先/派遣元を表示
+      let periodHeaderText = '';
       if (c.isDispatch && c.dispatchTo) {
         const agencyName = c.dispatchFrom || c.companyName;
-        companyDisplay = agencyName;
-        dispatchBlock = `
-        <div class="career-dispatch-info">
-          <div class="career-dispatch-line">派遣会社名：${e(agencyName)}</div>
-          <div class="career-dispatch-line">派遣先企業名：${e(c.dispatchTo)}</div>
-        </div>`;
+        periodHeaderText = `${startLabel}～${endLabel}　派遣先：${e(c.dispatchTo)}/ 派遣元：${e(agencyName)}`;
+      } else {
+        periodHeaderText = `${startLabel}～${endLabel}　${e(c.companyName)}`;
       }
-      const periodHeader = `${startLabel}～${endLabel}　　${e(companyDisplay)}`;
 
       const dutiesList = (c.duties || []).filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
       const achievementsList = (c.achievements || []).filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
 
       careerBlocks += `
       <div class="career-block">
-        <div class="career-period-header">${periodHeader}</div>
-        ${dispatchBlock}
+        <div class="career-period-header">${periodHeaderText}</div>
         <table class="company-info-table">
           <tr>
             <td class="company-details">
-              ${c.businessContent ? `事業内容：${e(c.businessContent)}<br>` : ''}
+              ${c.businessContent ? `事業内容：${e(c.businessContent)}` : ''}<br>
               ${c.capital ? `資本金：${e(c.capital)}` : ''}${c.revenue ? `　売上高：${e(c.revenue)}` : ''}<br>
               ${c.employeeCount ? `従業員数：${e(c.employeeCount)}` : ''}${c.listing ? `　上場：${e(c.listing)}` : ''}
             </td>
@@ -279,11 +271,20 @@ const Templates = (() => {
             </td>
           </tr>
         </table>
-        ${c.department ? `<div class="career-department">${e(c.department)} にて従事</div>` : ''}
-        <div class="career-details">
-          ${dutiesList ? `<div class="detail-section"><span class="detail-label">【業務内容】</span><ul>${dutiesList}</ul></div>` : ''}
-          ${achievementsList ? `<div class="detail-section"><span class="detail-label">【業務上の工夫・成果】</span><ul>${achievementsList}</ul></div>` : ''}
-        </div>
+        <table class="career-duties-table">
+          <tr>
+            <td class="period-col">
+              ${startLabel}<br>～<br>${endLabel}
+            </td>
+            <td class="duties-col">
+              ${c.department ? `<div class="career-department">${e(c.department)} にて従事</div>` : ''}
+              <div class="career-details">
+                ${dutiesList ? `<div class="detail-section"><span class="detail-label">【業務内容】</span><ul>${dutiesList}</ul></div>` : ''}
+                ${achievementsList ? `<div class="detail-section"><span class="detail-label">【業務上の工夫・成果】</span><ul>${achievementsList}</ul></div>` : ''}
+              </div>
+            </td>
+          </tr>
+        </table>
       </div>`;
     }
 
@@ -391,10 +392,8 @@ const Templates = (() => {
   function generateResumeHTML(profile, education, qualifications, application, options, pageStart, totalPages) {
     const opt = { ...DEFAULT_OPTIONS, ...options };
     const subDate = application?.submissionDate || Utils.todayStr();
-    const pStart = pageStart || 1;
-    const total = totalPages || 2;
-    const p1 = resumePage1(profile || {}, education || [], subDate, opt, pStart, total);
-    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {}, opt, pStart + 1, total);
+    const p1 = resumePage1(profile || {}, education || [], subDate, opt);
+    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {}, opt);
     return p1 + p2;
   }
 
