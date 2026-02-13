@@ -52,7 +52,7 @@ const Templates = (() => {
   // ================================================================
   // 履歴書 ページ1
   // ================================================================
-  function resumePage1(profile, educationList, submissionDate, options) {
+  function resumePage1(profile, educationList, submissionDate, options, pageNum, totalPages) {
     const opt = { ...DEFAULT_OPTIONS, ...options };
     const age = Utils.calcAge(profile.birthDate, submissionDate);
     const dateLabel = Utils.formatDateJP(submissionDate) + '現在';
@@ -151,13 +151,14 @@ const Templates = (() => {
       ${Array(Math.max(0, maxRows - page1Rows.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
+  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
   // ================================================================
   // 履歴書 ページ2
   // ================================================================
-  function resumePage2(profile, educationList, qualifications, application, options) {
+  function resumePage2(profile, educationList, qualifications, application, options, pageNum, totalPages) {
     const opt = { ...DEFAULT_OPTIONS, ...options };
 
     const historyRows = buildHistoryRows(educationList);
@@ -227,13 +228,14 @@ const Templates = (() => {
   </div>
 
   <div class="gender-note-bottom">※「性別」欄：記載は任意です。未記載とすることも可能です。</div>
+  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
   // ================================================================
   // 職務経歴書 ページ1
   // ================================================================
-  function careerPage1(profile, careers, application, submissionDate) {
+  function careerPage1(profile, careers, application, submissionDate, pageNum, totalPages) {
     const dateLabel = Utils.formatDateJPCompact(submissionDate) + '現在';
     const careerSummary = application?.careerSummary || '';
 
@@ -242,10 +244,10 @@ const Templates = (() => {
       const startLabel = Utils.formatYearMonth(c.startDate);
       const endLabel = c.endDate === '現在' ? '現在' : Utils.formatYearMonth(c.endDate);
 
-      // 派遣の場合は派遣元（派遣会社）先、会社名先
+      // 派遣の場合は派遣元（派遣会社）名、派遣先企業名を表示
       let companyDisplay = c.companyName;
       let dispatchBlock = '';
-      if (c.dispatchTo) {
+      if (c.isDispatch && c.dispatchTo) {
         const agencyName = c.dispatchFrom || c.companyName;
         companyDisplay = agencyName;
         dispatchBlock = `
@@ -302,13 +304,14 @@ const Templates = (() => {
     <h2 class="career-section-title">■職務経歴</h2>
     ${careerBlocks}
   </div>
+  ${pageFooter(pageNum, totalPages)}
 </div>`;
   }
 
   // ================================================================
   // 職務経歴書 ページ2
   // ================================================================
-  function careerPage2(qualifications, application) {
+  function careerPage2(qualifications, application, pageNum, totalPages) {
     const skills = application?.skills || [];
     const careerMotivation = application?.careerMotivation || '';
     const circledNumbers = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
@@ -353,6 +356,7 @@ const Templates = (() => {
     <div class="career-motivation-text">${e(careerMotivation).replace(/\n/g, '<br>')}</div>
   </div>` : ''}
 
+  ${pageFooter(pageNum, totalPages)}
   <div class="career-end">以上</div>
 </div>`;
   }
@@ -375,20 +379,31 @@ const Templates = (() => {
   }
 
   // ================================================================
+  // ページ番号フッター
+  // ================================================================
+  function pageFooter(pageNum, totalPages) {
+    return `<div class="page-number">${pageNum} / ${totalPages}</div>`;
+  }
+
+  // ================================================================
   // 全ページ生成
   // ================================================================
-  function generateResumeHTML(profile, education, qualifications, application, options) {
+  function generateResumeHTML(profile, education, qualifications, application, options, pageStart, totalPages) {
     const opt = { ...DEFAULT_OPTIONS, ...options };
     const subDate = application?.submissionDate || Utils.todayStr();
-    const p1 = resumePage1(profile || {}, education || [], subDate, opt);
-    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {}, opt);
+    const pStart = pageStart || 1;
+    const total = totalPages || 2;
+    const p1 = resumePage1(profile || {}, education || [], subDate, opt, pStart, total);
+    const p2 = resumePage2(profile || {}, education || [], qualifications || [], application || {}, opt, pStart + 1, total);
     return p1 + p2;
   }
 
-  function generateCareerHTML(profile, careers, qualifications, application) {
+  function generateCareerHTML(profile, careers, qualifications, application, pageStart, totalPages) {
     const subDate = application?.submissionDate || Utils.todayStr();
-    const p1 = careerPage1(profile || {}, careers || [], application || {}, subDate);
-    const p2 = careerPage2(qualifications || [], application || {});
+    const pStart = pageStart || 1;
+    const total = totalPages || 2;
+    const p1 = careerPage1(profile || {}, careers || [], application || {}, subDate, pStart, total);
+    const p2 = careerPage2(qualifications || [], application || {}, pStart + 1, total);
     return p1 + p2;
   }
 

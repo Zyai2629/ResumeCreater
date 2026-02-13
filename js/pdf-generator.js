@@ -70,7 +70,7 @@ const PdfGenerator = (() => {
    */
   async function generateResumePDF(profile, education, qualifications, application, options) {
     const container = document.getElementById('pdf-render-area');
-    container.innerHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options);
+    container.innerHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options, 1, 2);
 
     // レンダリング待ち
     await new Promise((r) => setTimeout(r, 300));
@@ -89,7 +89,7 @@ const PdfGenerator = (() => {
    */
   async function generateCareerPDF(profile, careers, qualifications, application) {
     const container = document.getElementById('pdf-render-area');
-    container.innerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application);
+    container.innerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application, 1, 2);
 
     await new Promise((r) => setTimeout(r, 300));
 
@@ -107,8 +107,9 @@ const PdfGenerator = (() => {
    */
   async function generateAllPDF(profile, education, careers, qualifications, application, options) {
     const container = document.getElementById('pdf-render-area');
-    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options);
-    const careerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application);
+    const totalPages = 4;
+    const resumeHTML = Templates.generateResumeHTML(profile, education, qualifications, application, options, 1, totalPages);
+    const careerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application, 3, totalPages);
     container.innerHTML = resumeHTML + careerHTML;
 
     await new Promise((r) => setTimeout(r, 300));

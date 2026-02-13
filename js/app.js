@@ -224,8 +224,9 @@ const App = (() => {
     const options = getOptions();
 
     const previewArea = document.getElementById('preview-area');
-    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app, options);
-    const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app);
+    const totalPages = 4; // 履歴書2ページ + 職務経歴書2ページ
+    const resumeHTML = Templates.generateResumeHTML(profileData, educationData, qualificationsData, app, options, 1, totalPages);
+    const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 3, totalPages);
     previewArea.innerHTML = resumeHTML + careerHTML;
 
     // アドバンストモード時の警告表示
@@ -238,6 +239,32 @@ const App = (() => {
 
     // プレビュー用応募先セレクタ
     renderPreviewAppSelector(app?.id);
+
+    // スマホ表示時はスケーリング
+    scalePreviewPages();
+  }
+
+  function scalePreviewPages() {
+    const pages = document.querySelectorAll('#preview-area .a4-page');
+    if (!pages.length) return;
+    const viewportWidth = window.innerWidth;
+    if (viewportWidth >= 768) {
+      // デスクトップ: スケーリング不要
+      pages.forEach((p) => {
+        p.style.transform = '';
+        p.style.marginBottom = '';
+      });
+      return;
+    }
+    const a4WidthPx = 793.7; // 210mm in px at 96dpi
+    const a4HeightPx = 1122.5; // 297mm in px at 96dpi
+    const padding = 8;
+    const scale = Math.min(1, (viewportWidth - padding) / a4WidthPx);
+    pages.forEach((p) => {
+      p.style.transformOrigin = 'top left';
+      p.style.transform = `scale(${scale})`;
+      p.style.marginBottom = `${-(a4HeightPx * (1 - scale))}px`;
+    });
   }
 
   function renderPreviewAppSelector(selectedId) {
@@ -514,14 +541,21 @@ const App = (() => {
         <input type="text" class="career-department" value="${Utils.escapeHtml(career.department || '')}" placeholder="例: 開発部">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>派遣先企業名（派遣の場合）</label>
-          <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
-        </div>
-        <div class="form-group">
-          <label>派遣会社名（派遣元）</label>
-          <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
+      <label class="checkbox-label" style="margin-bottom:8px;">
+        <input type="checkbox" class="career-is-dispatch" ${career.isDispatch ? 'checked' : ''}>
+        <span>派遣として勤務</span>
+      </label>
+
+      <div class="dispatch-fields" style="${career.isDispatch ? '' : 'display:none;'}">
+        <div class="form-row">
+          <div class="form-group">
+            <label>派遣会社名（派遣元）</label>
+            <input type="text" class="career-dispatch-from" value="${Utils.escapeHtml(career.dispatchFrom || '')}" placeholder="派遣会社名">
+          </div>
+          <div class="form-group">
+            <label>派遣先企業名</label>
+            <input type="text" class="career-dispatch-to" value="${Utils.escapeHtml(career.dispatchTo || '')}" placeholder="派遣先の企業名">
+          </div>
         </div>
       </div>
 
@@ -559,6 +593,7 @@ const App = (() => {
       entry.position = card.querySelector('.career-position').value;
       entry.employmentType = card.querySelector('.career-employment-type').value;
       entry.department = card.querySelector('.career-department').value;
+      entry.isDispatch = card.querySelector('.career-is-dispatch').checked;
       entry.dispatchTo = card.querySelector('.career-dispatch-to').value;
       entry.dispatchFrom = card.querySelector('.career-dispatch-from').value;
 
@@ -592,6 +627,17 @@ const App = (() => {
     if (card.querySelector('.career-current').checked) {
       card.querySelector('.career-end-date').disabled = true;
     }
+
+    // 派遣チェック切替
+    card.querySelector('.career-is-dispatch').addEventListener('change', (ev) => {
+      const dispatchFields = card.querySelector('.dispatch-fields');
+      if (ev.target.checked) {
+        dispatchFields.style.display = '';
+      } else {
+        dispatchFields.style.display = 'none';
+      }
+      saveCareerFields();
+    });
 
     // カード削除
     card.querySelector('.btn-delete-career').addEventListener('click', async () => {
@@ -672,6 +718,7 @@ const App = (() => {
       achievements: [],
       dispatchTo: '',
       dispatchFrom: '',
+      isDispatch: false,
       startDate: '',
       endDate: '',
       order: careerData.length,
