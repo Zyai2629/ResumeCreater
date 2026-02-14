@@ -8,9 +8,9 @@ const Templates = (() => {
   // デフォルト行数設定
   const DEFAULT_OPTIONS = {
     advancedMode: false,
-    page1HistoryRows: 18,
-    page2HistoryRows: 5,
-    qualificationRows: 6,
+    page1HistoryRows: 16,
+    page2HistoryRows: 3,
+    qualificationRows: 3,
   };
 
   // ================================================================
@@ -31,6 +31,8 @@ const Templates = (() => {
       const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
       rows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
+    // 「以上」行を自動追加
+    rows.push({ year: '', month: '', content: '以上', isEndMark: true });
     return rows;
   }
 
@@ -38,10 +40,11 @@ const Templates = (() => {
     const yearStr = r.year ? e(String(r.year)) : '&nbsp;';
     const monthStr = r.month ? e(String(r.month)) : '&nbsp;';
     const contentStr = r.content ? e(r.content) : '&nbsp;';
+    const cls = r.isHeader ? 'center bold' : r.isEndMark ? 'end-mark' : '';
     return `<tr>
           <td class="center">${yearStr}</td>
           <td class="center">${monthStr}</td>
-          <td class="${r.isHeader ? 'center bold' : ''}">${contentStr}</td>
+          <td class="${cls}">${contentStr}</td>
         </tr>`;
   }
 
@@ -80,17 +83,16 @@ const Templates = (() => {
   </div>
 
   <table class="resume-name-table">
-    <tr>
-      <td class="label-cell">
-        <span class="furigana-label">ふりがな</span><br>氏名
-      </td>
-      <td class="name-cell">
-        <span class="furigana">${e(profile.nameKana)}</span><br>
-        <span class="name-value">${e(profile.name)}</span>
-      </td>
-      <td class="photo-cell">
+    <tr class="furigana-row">
+      <td class="label-cell">ふりがな</td>
+      <td class="name-cell">${e(profile.nameKana)}</td>
+      <td class="photo-cell" rowspan="2">
         <div class="photo-box">${photoHtml}</div>
       </td>
+    </tr>
+    <tr>
+      <td class="label-cell">氏名</td>
+      <td class="name-cell"><span class="name-value">${e(profile.name)}</span></td>
     </tr>
   </table>
 
@@ -105,33 +107,35 @@ const Templates = (() => {
   </table>
 
   <table class="resume-info-table address-table">
-    <tr>
-      <td class="label-cell">
-        <span class="furigana-label">ふりがな</span><br>現住所
-      </td>
-      <td class="address-cell">
-        <span class="furigana">${e(profile.addressKana)}</span><br>
-        〒${e(profile.postalCode)}<br>
-        ${e(profile.address)}
-      </td>
-      <td class="contact-info-cell">
+    <tr class="furigana-row">
+      <td class="label-cell">ふりがな</td>
+      <td class="address-cell">${e(profile.addressKana)}</td>
+      <td class="contact-info-cell" rowspan="2">
         電話　${e(profile.phone)}<br>
         E-mail<br>${e(profile.email)}
       </td>
     </tr>
     <tr>
-      <td class="label-cell">
-        <span class="furigana-label">ふりがな</span><br>連絡先
-      </td>
+      <td class="label-cell">現住所</td>
       <td class="address-cell">
-        <span class="furigana">${e(profile.contactAddressKana || '')}</span><br>
+        〒${e(profile.postalCode)}<br>
+        ${e(profile.address)}
+      </td>
+    </tr>
+    <tr class="furigana-row">
+      <td class="label-cell">ふりがな</td>
+      <td class="address-cell">${e(profile.contactAddressKana || '')}</td>
+      <td class="contact-info-cell" rowspan="2">
+        電話　${e(profile.contactPhone || '')}<br>
+        E-mail<br>${e(profile.contactEmail || '')}
+      </td>
+    </tr>
+    <tr>
+      <td class="label-cell">連絡先</td>
+      <td class="address-cell">
         〒${e(profile.contactPostalCode || '')}
         <span class="contact-note">（現住所以外に連絡を希望する場合のみ記入）</span><br>
         ${e(profile.contactAddress || '')}
-      </td>
-      <td class="contact-info-cell">
-        電話　${e(profile.contactPhone || '')}<br>
-        E-mail<br>${e(profile.contactEmail || '')}
       </td>
     </tr>
   </table>
