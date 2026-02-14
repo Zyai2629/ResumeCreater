@@ -371,11 +371,11 @@ const App = (() => {
         const addressEl = document.getElementById(addressId);
         const kanaEl = document.getElementById(addressKanaId);
 
-        if (addressEl && !addressEl.value) {
+        if (addressEl) {
           addressEl.value = addr;
           addressEl.dispatchEvent(new Event('input', { bubbles: true }));
         }
-        if (kanaEl && !kanaEl.value) {
+        if (kanaEl) {
           kanaEl.value = kana;
           kanaEl.dispatchEvent(new Event('input', { bubbles: true }));
         }

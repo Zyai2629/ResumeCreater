@@ -83,25 +83,22 @@ const Templates = (() => {
   </div>
 
   <table class="resume-name-table">
-    <colgroup>
-      <col style="width: 20mm;">
-      <col>
-      <col style="width: 46mm;">
-      <col style="width: 46mm;">
-    </colgroup>
     <tr class="furigana-row">
       <td class="label-cell">ふりがな</td>
-      <td class="name-cell" colspan="2">${e(profile.nameKana)}</td>
-      <td class="photo-cell" rowspan="3">
+      <td class="name-cell">${e(profile.nameKana)}</td>
+      <td class="photo-cell" rowspan="2">
         <div class="photo-box">${photoHtml}</div>
       </td>
     </tr>
     <tr>
       <td class="label-cell">氏名</td>
-      <td class="name-cell" colspan="2"><span class="name-value">${e(profile.name)}</span></td>
+      <td class="name-cell"><span class="name-value">${e(profile.name)}</span></td>
     </tr>
-    <tr class="birth-row">
-      <td class="birth-cell" colspan="2">${e(birthLabel)}</td>
+  </table>
+
+  <table class="resume-birth-table">
+    <tr>
+      <td class="birth-cell">${e(birthLabel)}</td>
       <td class="gender-cell">
         <span class="gender-note">※性別</span><br>
         ${e(profile.gender || '')}
@@ -125,7 +122,7 @@ const Templates = (() => {
         ${e(profile.address)}
       </td>
     </tr>
-    <tr class="furigana-row">
+    <tr class="furigana-row contact-separator">
       <td class="label-cell">ふりがな</td>
       <td class="address-cell">${e(profile.contactAddressKana || '')}</td>
       <td class="contact-info-cell" rowspan="2">
@@ -156,6 +153,8 @@ const Templates = (() => {
       ${Array(Math.max(0, maxRows - page1Rows.length)).fill(emptyRowHtml()).join('')}
     </tbody>
   </table>
+
+  <div class="gender-note-bottom">※「性別」欄：記載は任意です。未記載とすることも可能です。</div>
 </div>`;
   }
 
@@ -220,7 +219,7 @@ const Templates = (() => {
     <div class="motivation-header">志望の動機、特技、好きな学科、アピールポイントなど</div>
     <div class="motivation-body">
       ${motivationText ? `<p class="section-label">【志望理由】</p><p class="section-text">${e(motivationText).replace(/\n/g, '<br>')}</p>` : ''}
-      ${selfPRText ? `<p class="section-label">【自己PR】</p><p class="section-text">${e(selfPRText).replace(/\n/g, '<br>')}</p>` : ''}
+      ${selfPRText ? `<div class="section-spacer"></div><p class="section-label">【自己PR】</p><p class="section-text">${e(selfPRText).replace(/\n/g, '<br>')}</p>` : ''}
     </div>
   </div>
 
@@ -230,8 +229,6 @@ const Templates = (() => {
       <p>${e(personalRequest).replace(/\n/g, '<br>')}</p>
     </div>
   </div>
-
-  <div class="gender-note-bottom">※「性別」欄：記載は任意です。未記載とすることも可能です。</div>
 </div>`;
   }
 

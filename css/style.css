@@ -652,9 +652,9 @@ body {
   flex-direction: column;
 }
 
-/* 職務経歴書ページ：左広め・右狭めの余白 */
+/* 職務経歴書ページ：左広め・右狭めの余白（ページ番号分の下余白確保） */
 .career-page {
-  padding: 18mm 11mm 19mm 20mm;
+  padding: 18mm 11mm 22mm 20mm;
   display: flex;
   flex-direction: column;
 }
@@ -683,30 +683,7 @@ body {
   margin-right: 46mm;
 }
 
-/* 写真セル */
-.photo-cell {
-  width: 46mm;
-  text-align: center;
-  vertical-align: top;
-  padding: 2mm 2mm 1mm 2mm;
-  border: none;
-  border-left: 1px solid #000;
-}
-
-.photo-box {
-  width: 24mm;
-  height: 32mm;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9pt;
-  color: #999;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-/* 氏名テーブル */
+/* ====== 氏名テーブル（写真セル含む） ====== */
 .resume-name-table {
   width: 100%;
   border-collapse: collapse;
@@ -724,22 +701,55 @@ body {
   height: 7mm;
 }
 
-.resume-name-table tr:not(.furigana-row):not(.birth-row) {
+.resume-name-table tr:not(.furigana-row) {
   height: 18mm;
 }
 
-.resume-name-table tr.birth-row {
-  height: 12.5mm;
-  border-top: 2px solid #000;
+/* 写真セル：上・右・下の罫線なし、左のみ（縦セパレータ） */
+.photo-cell {
+  width: 46mm;
+  text-align: center;
+  vertical-align: middle;
+  padding: 2mm;
+  border-top: 2px solid transparent !important;
+  border-right: 2px solid transparent !important;
+  border-bottom: 2px solid transparent !important;
+  border-left: 1px solid #000 !important;
 }
 
-.resume-name-table .birth-cell {
-  text-align: center;
-  font-size: 10pt;
+.photo-box {
+  width: 24mm;
+  height: 22mm;
+  border: 1px dashed #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7pt;
+  color: #999;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* ====== 生年月日・性別テーブル ====== */
+.resume-birth-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  border: 2px solid #000;
+  border-top: none;
+}
+
+.resume-birth-table td {
+  border: 1px solid #000;
+  padding: 1mm 1.5mm;
   vertical-align: middle;
 }
 
-/* ふりがな行：共通スタイル */
+.resume-birth-table tr {
+  height: 12.5mm;
+}
+
+/* ====== ふりがな行：共通スタイル ====== */
 .furigana-row td {
   font-size: 8pt;
   color: #666;
@@ -747,7 +757,7 @@ body {
   padding: 0.5mm 1.5mm;
 }
 
-/* 履歴書テーブル（住所等） */
+/* ====== 住所テーブル ====== */
 .resume-info-table {
   width: 100%;
   border-collapse: collapse;
@@ -770,6 +780,12 @@ body {
   height: 7mm;
 }
 
+/* 現住所と連絡先の間の太い罫線 */
+.contact-separator td {
+  border-top: 2px solid #000 !important;
+}
+
+/* ====== セル共通スタイル ====== */
 .label-cell {
   background: #f9f9f9;
   font-size: 9pt;
@@ -832,7 +848,7 @@ body {
   color: #999;
 }
 
-/* 学歴・職歴テーブル */
+/* ====== 学歴・職歴テーブル ====== */
 .history-table {
   width: 100%;
   border-collapse: collapse;
@@ -851,6 +867,7 @@ body {
 
 /* 履歴書ページ1: 学歴・職歴テーブルを残りスペースで埋める */
 #resume-page1 .history-table {
+  border-top: none;
   flex: 1;
 }
 
@@ -874,6 +891,14 @@ body {
   padding-right: 6mm;
 }
 
+/* ====== 性別注記（ページ末尾） ====== */
+.gender-note-bottom {
+  font-size: 8pt;
+  color: #666;
+  margin-top: 2mm;
+  text-align: left;
+}
+
 /* 資格テーブル */
 .qualification-table {
   margin-top: 0;
@@ -883,14 +908,14 @@ body {
 /* 志望動機セクション */
 .motivation-section {
   border: 2px solid #000;
-  margin-top: 0;
+  margin-top: 4mm;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .motivation-header {
-  padding: 3px 6px;
+  padding: 2.5mm 2mm;
   font-size: 9.5pt;
   background: #f9f9f9;
   border-bottom: 1px solid #000;
@@ -916,26 +941,37 @@ body {
   text-justify: inter-ideograph;
 }
 
+/* 志望理由と自己PRの間のスペース */
+.section-spacer {
+  height: 4mm;
+}
+
 /* 本人希望 */
 .request-section {
   border: 2px solid #000;
-  border-top: none;
-  margin-top: 0;
+  margin-top: 4mm;
 }
 
 .request-header {
-  padding: 3px 6px;
-  font-size: 8pt;
+  padding: 2.5mm 2mm;
+  font-size: 9.5pt;
   background: #f9f9f9;
   border-bottom: 1px solid #000;
 }
 
 .request-body {
   padding: 6px 8px;
-  min-height: 43mm;
+  min-height: 36mm;
   font-size: 9.5pt;
   text-align: justify;
   text-justify: inter-ideograph;
+  background-image:
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000);
+  background-size: 100% 1px;
+  background-position: 0 9mm, 0 18mm, 0 27mm;
+  background-repeat: no-repeat;
 }
 
 .gender-note-bottom {
