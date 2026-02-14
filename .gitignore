@@ -1,5 +1,7 @@
 # サンプルファイル（個人情報を含むため除外）
 sample/
+test_output/
+test_src/
 
 # OS生成ファイル
 .DS_Store
