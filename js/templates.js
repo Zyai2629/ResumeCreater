@@ -83,22 +83,25 @@ const Templates = (() => {
   </div>
 
   <table class="resume-name-table">
+    <colgroup>
+      <col style="width: 20mm;">
+      <col>
+      <col style="width: 46mm;">
+      <col style="width: 46mm;">
+    </colgroup>
     <tr class="furigana-row">
       <td class="label-cell">ふりがな</td>
-      <td class="name-cell">${e(profile.nameKana)}</td>
-      <td class="photo-cell" rowspan="2">
+      <td class="name-cell" colspan="2">${e(profile.nameKana)}</td>
+      <td class="photo-cell" rowspan="3">
         <div class="photo-box">${photoHtml}</div>
       </td>
     </tr>
     <tr>
       <td class="label-cell">氏名</td>
-      <td class="name-cell"><span class="name-value">${e(profile.name)}</span></td>
+      <td class="name-cell" colspan="2"><span class="name-value">${e(profile.name)}</span></td>
     </tr>
-  </table>
-
-  <table class="resume-birth-table">
-    <tr>
-      <td class="birth-cell">${e(birthLabel)}</td>
+    <tr class="birth-row">
+      <td class="birth-cell" colspan="2">${e(birthLabel)}</td>
       <td class="gender-cell">
         <span class="gender-note">※性別</span><br>
         ${e(profile.gender || '')}
@@ -273,12 +276,21 @@ const Templates = (() => {
           </tr>
         </table>
         <table class="career-duties-table">
-          <tr>
+          ${c.department ? `<tr class="dept-row">
             <td class="period-col">
               ${startLabel}<br>～<br>${endLabel}
             </td>
             <td class="duties-col">
-              ${c.department ? `<div class="career-department">${e(c.department)} にて従事</div>` : ''}
+              <div class="career-department">${e(c.department)} にて従事</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="period-col period-col-cont"></td>
+            <td class="duties-col">` : `<tr>
+            <td class="period-col">
+              ${startLabel}<br>～<br>${endLabel}
+            </td>
+            <td class="duties-col">`}
               <div class="career-details">
                 ${dutiesList ? `<div class="detail-section"><span class="detail-label">【業務内容】</span><ul>${dutiesList}</ul></div>` : ''}
                 ${achievementsList ? `<div class="detail-section"><span class="detail-label">【業務上の工夫・成果】</span><ul>${achievementsList}</ul></div>` : ''}

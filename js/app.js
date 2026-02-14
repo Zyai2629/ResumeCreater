@@ -115,6 +115,10 @@ const App = (() => {
       });
     }
 
+    // 郵便番号→住所自動入力
+    setupPostalCodeAutoFill('postalCode', 'address', 'addressKana');
+    setupPostalCodeAutoFill('contactPostalCode', 'contactAddress', 'contactAddressKana');
+
     // 学歴・職歴追加
     document.getElementById('btn-add-edu').addEventListener('click', () => addEducationEntry('学歴'));
     document.getElementById('btn-add-work').addEventListener('click', () => addEducationEntry('職歴'));
@@ -342,6 +346,43 @@ const App = (() => {
     } catch (err) {
       Utils.showToast('写真の読み込みに失敗しました', 'error');
     }
+  }
+
+  // ================================================================
+  // 郵便番号→住所自動入力
+  // ================================================================
+  function setupPostalCodeAutoFill(postalId, addressId, addressKanaId) {
+    const postalInput = document.getElementById(postalId);
+    if (!postalInput) return;
+
+    postalInput.addEventListener('input', debounce(async () => {
+      const raw = postalInput.value.replace(/[^0-9]/g, '');
+      if (raw.length !== 7) return;
+
+      try {
+        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${raw}`);
+        const json = await res.json();
+        if (json.status !== 200 || !json.results || json.results.length === 0) return;
+
+        const r = json.results[0];
+        const addr = `${r.address1}${r.address2}${r.address3}`;
+        const kana = `${r.kana1}${r.kana2}${r.kana3}`;
+
+        const addressEl = document.getElementById(addressId);
+        const kanaEl = document.getElementById(addressKanaId);
+
+        if (addressEl && !addressEl.value) {
+          addressEl.value = addr;
+          addressEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (kanaEl && !kanaEl.value) {
+          kanaEl.value = kana;
+          kanaEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } catch (err) {
+        // ネットワークエラーは無視（オフライン時）
+      }
+    }, 300));
   }
 
   // ================================================================
