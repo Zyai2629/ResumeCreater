@@ -714,12 +714,12 @@ body {
   border-top: 2px solid transparent !important;
   border-right: 2px solid transparent !important;
   border-bottom: 2px solid transparent !important;
-  border-left: 1px solid #000 !important;
+  border-left: 2px solid #000 !important;
 }
 
 .photo-box {
   width: 27mm;
-  height: 23mm;
+  height: 23.2mm;
   border: 1px dashed #999;
   display: flex;
   align-items: center;
@@ -819,6 +819,7 @@ body {
   text-align: left;
   vertical-align: middle;
   padding-left: 2mm;
+  border-left: 2px solid #000 !important;
 }
 
 .gender-note {
@@ -846,6 +847,7 @@ body {
   width: 46mm;
   padding: 0 1.5mm !important;
   height: 1px; /* flex子要素のheight:100%のため */
+  border-left: 2px solid #000 !important;
 }
 
 .contact-info-inner {
@@ -1051,7 +1053,7 @@ body {
 
 .career-block {
   border: 1px solid #000;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   page-break-inside: avoid;
 }
 

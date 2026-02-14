@@ -232,7 +232,7 @@ const Utils = (() => {
     const blocks = Array.from(careerSection.querySelectorAll('.career-block'));
     const overflowBlocks = blocks.filter(block => {
       const blockRect = block.getBoundingClientRect();
-      return blockRect.bottom > safeBottom + 3; // 3px tolerance
+      return blockRect.bottom > safeBottom + 1; // 1px tolerance
     });
 
     if (overflowBlocks.length === 0) return;
@@ -274,7 +274,7 @@ const Utils = (() => {
       const newPxPerMm = newPageRect.height / 297;
       const newSafeBottom = newPageRect.top + (297 - bottomPaddingMm) * newPxPerMm;
 
-      if (block.getBoundingClientRect().bottom > newSafeBottom + 3) {
+      if (block.getBoundingClientRect().bottom > newSafeBottom + 1) {
         // このページも溢れ → 次のブロック用に新ページ
         insertBefore = currentPage.nextSibling;
         currentPage = null;

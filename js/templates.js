@@ -31,6 +31,11 @@ const Templates = (() => {
       const monthStr = item.month ? String(item.month).padStart(2, '0') : '';
       rows.push({ year: item.year || '', month: monthStr, content: item.content });
     }
+    // 最終職歴が退社・退職でなければ「現在に至る」を追加
+    const lastWork = workItems[workItems.length - 1];
+    if (workItems.length > 0 && lastWork && !/退社|退職/.test(lastWork.content)) {
+      rows.push({ year: '', month: '', content: '現在に至る', isEndMark: true });
+    }
     // 「以上」行を自動追加
     rows.push({ year: '', month: '', content: '以上', isEndMark: true });
     return rows;
