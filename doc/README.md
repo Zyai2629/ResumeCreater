@@ -82,6 +82,16 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v15 — 写真枠サンプル完全一致・以上削除・現在に至る左寄せ
+- **写真枠の位置・サイズをサンプルに完全一致**: 高さ23.2mm → 35mmに変更、`position: absolute; top: -13.1mm; left: 6mm;` でタイトル行までの拡張配置
+  - サンプル画像とのPlaywright計測: top diff +0.04mm, left diff -0.11mm, サイズ完全一致
+- **写真枠のposition変更**: `position: relative` → `position: absolute`、photo-cellに `position: relative` を追加
+- **「以上」行を削除**: 履歴書の学歴・職歴テーブルから「以上」行を完全に削除
+- **「現在に至る」左寄せ**: `text-align: right` → `text-align: left; padding-left: 2mm;` に変更
+- **性別セル上部の二重線修正**: `.resume-birth-table td` に `border-top: none` を追加し、name-tableとbirth-tableの結合部分の二重線を解消
+- **Service Worker**: キャッシュバージョンを v13 に更新
+- **ドキュメント更新**: copilot-instructions.md / SPEC.md / README.md を最新仕様に同期
+
 ### v14 — サンプル完全一致・レイアウト精密修正・自動判定機能追加
 - **写真ボックス位置修正**: `position: relative; top: -1.35mm` でテーブル上端と完全一致（diff=+0.00mm）
   - `margin-top` は `border-collapse` テーブルセル内で無効のため `position: relative` を採用

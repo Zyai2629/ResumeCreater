@@ -715,20 +715,21 @@ body {
   border-right: 2px solid transparent !important;
   border-bottom: 2px solid transparent !important;
   border-left: 2px solid #000 !important;
+  position: relative;
 }
 
 .photo-box {
   width: 27mm;
-  height: 23.2mm;
+  height: 35mm;
   border: 1px dashed #999;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 7pt;
   color: #999;
-  margin: 0 0 0 4mm;
-  position: relative;
-  top: -1.35mm;
+  position: absolute;
+  top: -13.1mm;
+  left: 6mm;
   overflow: hidden;
 }
 
@@ -743,6 +744,7 @@ body {
 
 .resume-birth-table td {
   border: 1px solid #000;
+  border-top: none;
   padding: 1mm 1.5mm;
   vertical-align: middle;
 }
@@ -916,8 +918,8 @@ body {
 }
 
 .history-table .end-mark {
-  text-align: right;
-  padding-right: 6mm;
+  text-align: left;
+  padding-left: 2mm;
 }
 
 /* ====== 性別注記（ページ末尾） ====== */

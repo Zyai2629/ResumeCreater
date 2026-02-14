@@ -36,8 +36,6 @@ const Templates = (() => {
     if (workItems.length > 0 && lastWork && !/退社|退職/.test(lastWork.content)) {
       rows.push({ year: '', month: '', content: '現在に至る', isEndMark: true });
     }
-    // 「以上」行を自動追加
-    rows.push({ year: '', month: '', content: '以上', isEndMark: true });
     return rows;
   }
 
