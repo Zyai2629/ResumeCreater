@@ -709,8 +709,8 @@ body {
 .photo-cell {
   width: 46mm;
   text-align: center;
-  vertical-align: middle;
-  padding: 2mm;
+  vertical-align: top;
+  padding: 0 2mm 1mm 2mm !important;
   border-top: 2px solid transparent !important;
   border-right: 2px solid transparent !important;
   border-bottom: 2px solid transparent !important;
@@ -718,15 +718,15 @@ body {
 }
 
 .photo-box {
-  width: 24mm;
-  height: 22mm;
+  width: 27mm;
+  height: 23mm;
   border: 1px dashed #999;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 7pt;
   color: #999;
-  margin: 0 auto;
+  margin: 0 0 0 4mm;
   overflow: hidden;
 }
 
@@ -841,6 +841,29 @@ body {
 .contact-info-cell {
   font-size: 9pt;
   width: 46mm;
+  padding: 0 1.5mm !important;
+  height: 1px; /* flex子要素のheight:100%のため */
+}
+
+.contact-info-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.contact-phone-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #000;
+  padding: 0 0.5mm;
+}
+
+.contact-email-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5mm;
 }
 
 .contact-note {
@@ -1054,60 +1077,45 @@ body {
   margin-bottom: 2px;
 }
 
-.company-info-table {
+/* ====== 職歴コンテンツ統合テーブル ====== */
+.career-content-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0;
   border: none;
-  border-bottom: 1px solid #000;
 }
 
-.company-info-table td {
+.career-content-table td {
   border: none;
   padding: 4px 6px;
   font-size: 10pt;
   vertical-align: top;
 }
 
-.company-info-table .position-cell {
-  border-left: 1px solid #000;
-}
-
-.company-details {
+.career-content-table .company-details {
+  border-bottom: 1px solid #000;
   width: 78%;
 }
 
-.position-cell {
+.career-content-table .position-cell {
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #000;
   width: 22%;
   text-align: center;
   font-size: 10pt;
 }
 
-/* 期間＋職務内容テーブル */
-.career-duties-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 0;
-  border: none;
-}
-
-.career-duties-table td {
-  border: none;
-  padding: 4px 6px;
-  font-size: 10pt;
-  vertical-align: top;
-}
-
-.period-col {
+/* 期間列（career-content-table内） */
+.career-content-table .period-col {
   width: 24mm;
+  min-width: 24mm;
   text-align: center;
-  vertical-align: top;
+  vertical-align: middle;
   font-size: 10pt;
   border-right: 1px solid #000;
-  position: relative;
 }
 
-.duties-col {
+.career-content-table .duties-col {
   vertical-align: top;
 }
 
@@ -1119,10 +1127,6 @@ body {
 
 .dept-row td {
   border-bottom: 1px solid #000 !important;
-}
-
-.period-col-cont {
-  border-right: 1px solid #000;
 }
 
 .career-details {

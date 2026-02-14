@@ -92,6 +92,7 @@ const PdfGenerator = (() => {
     container.innerHTML = Templates.generateCareerHTML(profile, careers, qualifications, application, 1, 2);
 
     await new Promise((r) => setTimeout(r, 300));
+    await Utils.adjustCareerOverflow(container);
 
     const pages = container.querySelectorAll('.a4-page');
     const subDate = application?.submissionDate || Utils.todayStr();
@@ -113,6 +114,7 @@ const PdfGenerator = (() => {
     container.innerHTML = resumeHTML + careerHTML;
 
     await new Promise((r) => setTimeout(r, 300));
+    await Utils.adjustCareerOverflow(container);
 
     const pages = container.querySelectorAll('.a4-page');
     const subDate = application?.submissionDate || Utils.todayStr();

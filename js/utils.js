@@ -205,6 +205,97 @@ const Utils = (() => {
     }, 2500);
   }
 
+  /**
+   * 職務経歴書ページの溢れ調整：
+   * career-page1 のコンテンツが安全領域を超えた場合、
+   * 超過した career-block を新しい続きページに移動し、ページ番号を更新する。
+   * @param {HTMLElement} container - career-page が含まれるコンテナ
+   */
+  async function adjustCareerOverflow(container) {
+    await new Promise(r => setTimeout(r, 150));
+
+    const careerPage1 = container.querySelector('#career-page1');
+    if (!careerPage1) return;
+
+    // 職務経歴セクション（2番目の .career-section）を取得
+    const sections = careerPage1.querySelectorAll('.career-section');
+    if (sections.length < 2) return;
+    const careerSection = sections[sections.length - 1];
+
+    // ページの実際の高さからピクセル/mmの比率を算出
+    const pageRect = careerPage1.getBoundingClientRect();
+    const pxPerMm = pageRect.height / 297;
+    const bottomPaddingMm = 22;
+    const topPaddingMm = 18;
+    const safeBottom = pageRect.top + (297 - bottomPaddingMm) * pxPerMm;
+
+    const blocks = Array.from(careerSection.querySelectorAll('.career-block'));
+    const overflowBlocks = blocks.filter(block => {
+      const blockRect = block.getBoundingClientRect();
+      return blockRect.bottom > safeBottom + 1; // 1px tolerance
+    });
+
+    if (overflowBlocks.length === 0) return;
+
+    // career-page2（資格セクション等）の前に続きページを挿入
+    const careerPage2 = container.querySelector('#career-page2');
+    let insertBefore = careerPage2;
+
+    // 続きページを作成して溢れブロックを移動
+    let currentPage = null;
+    let currentSection = null;
+
+    for (const block of overflowBlocks) {
+      if (!currentPage) {
+        currentPage = document.createElement('div');
+        currentPage.className = 'a4-page career-page';
+
+        const innerHTML = `
+          <div class="career-section" style="margin-top: 0;">
+            <h2 class="career-section-title">■職務経歴（続き）</h2>
+          </div>
+          <div class="page-number"></div>
+        `;
+        currentPage.innerHTML = innerHTML;
+        currentSection = currentPage.querySelector('.career-section');
+
+        if (insertBefore) {
+          container.insertBefore(currentPage, insertBefore);
+        } else {
+          container.appendChild(currentPage);
+        }
+      }
+
+      currentSection.appendChild(block);
+
+      // 新ページでも溢れるか確認
+      await new Promise(r => setTimeout(r, 50));
+      const newPageRect = currentPage.getBoundingClientRect();
+      const newPxPerMm = newPageRect.height / 297;
+      const newSafeBottom = newPageRect.top + (297 - bottomPaddingMm) * newPxPerMm;
+
+      if (block.getBoundingClientRect().bottom > newSafeBottom + 1) {
+        // このページも溢れ → 次のブロック用に新ページ
+        insertBefore = currentPage.nextSibling;
+        currentPage = null;
+        currentSection = null;
+      }
+    }
+
+    // 全職務経歴書ページのページ番号を更新
+    const allCareerPages = container.querySelectorAll('.career-page');
+    const totalPages = allCareerPages.length;
+    allCareerPages.forEach((page, i) => {
+      let pageNum = page.querySelector('.page-number');
+      if (!pageNum) {
+        pageNum = document.createElement('div');
+        pageNum.className = 'page-number';
+        page.appendChild(pageNum);
+      }
+      pageNum.textContent = `${i + 1} / ${totalPages}`;
+    });
+  }
+
   return {
     calcAge,
     formatDateJP,
@@ -221,5 +312,6 @@ const Utils = (() => {
     downloadFile,
     openFileDialog,
     showToast,
+    adjustCareerOverflow,
   };
 })();

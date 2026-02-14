@@ -237,6 +237,9 @@ const App = (() => {
     const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 1, 2);
     previewArea.innerHTML = resumeHTML + careerHTML;
 
+    // 職務経歴書ページの溢れ調整（ページ番号重複防止）
+    await Utils.adjustCareerOverflow(previewArea);
+
     // アドバンストモード時の警告表示
     if (options.advancedMode) {
       const warnings = Templates.checkOverflow(educationData, qualificationsData, options);

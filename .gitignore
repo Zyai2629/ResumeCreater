@@ -2,6 +2,7 @@
 sample/
 test_output/
 test_src/
+.github/
 
 # OS生成ファイル
 .DS_Store
