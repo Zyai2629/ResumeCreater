@@ -689,6 +689,7 @@ body {
   border-collapse: collapse;
   margin-bottom: 0;
   border: 2px solid #000;
+  border-bottom: none;
 }
 
 .resume-name-table td {
@@ -703,6 +704,10 @@ body {
 
 .resume-name-table tr:not(.furigana-row) {
   height: 18mm;
+}
+
+.resume-name-table tr:not(.furigana-row) td {
+  border-bottom: none;
 }
 
 /* 写真セル：上・右・下の罫線なし、左のみ（縦セパレータ） */
@@ -739,12 +744,10 @@ body {
   border-collapse: collapse;
   margin-bottom: 0;
   border: 2px solid #000;
-  border-top: none;
 }
 
 .resume-birth-table td {
   border: 1px solid #000;
-  border-top: none;
   padding: 1mm 1.5mm;
   vertical-align: middle;
 }
@@ -865,6 +868,7 @@ body {
   align-items: center;
   border-bottom: 1px solid #000;
   padding: 0 0.5mm;
+  margin-right: -1.5mm;
 }
 
 .contact-email-row {

@@ -82,6 +82,12 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v16 — 太線結合修正・電話区切り線延長
+- **birth-table上罫線フル幅修正**: name-tableのセル下罫線を削除し、birth-tableの`border-top: 2px`のみで結合部の水平線を提供。サンプルと同じフル幅の太線を実現
+- **name-tableの結合方式変更**: `border-bottom: none`（テーブル外枠）+ 最終行セルの`border-bottom: none`で二重線を完全に解消
+- **電話/メール区切り線の右端延長**: `.contact-phone-row`に`margin-right: -1.5mm`を追加し、セル右端まで区切り線を延長
+- **Service Worker**: キャッシュバージョンを v14 に更新
+
 ### v15 — 写真枠サンプル完全一致・以上削除・現在に至る左寄せ
 - **写真枠の位置・サイズをサンプルに完全一致**: 高さ23.2mm → 35mmに変更、`position: absolute; top: -13.1mm; left: 6mm;` でタイトル行までの拡張配置
   - サンプル画像とのPlaywright計測: top diff +0.04mm, left diff -0.11mm, サイズ完全一致
