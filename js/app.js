@@ -252,6 +252,11 @@ const App = (() => {
     const careerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 1, 2);
     previewArea.innerHTML = resumeHTML + careerHTML;
 
+    // Webフォント読み込み完了を待機
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     // 職務経歴書ページの溢れ調整（ページ番号重複防止）
     await Utils.adjustCareerOverflow(previewArea);
 

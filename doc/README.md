@@ -10,6 +10,7 @@ iPhone・Android・Windows上でオフライン完結で履歴書・職務経歴
 | アプリ形式 | PWA（Progressive Web App） |
 | フロントエンド | HTML / CSS / JavaScript（フレームワーク不使用） |
 | PDF生成 | jsPDF 2.5.1 + html2canvas 1.4.1（CDN） |
+| フォント | Noto Serif JP（Google Fonts CDN） |
 | データ保存 | IndexedDB |
 | 設定保存 | localStorage（アドバンストモード設定） |
 | ホスティング | GitHub Pages（HTTPS） |
@@ -82,6 +83,14 @@ ResumeCreater/
 - 初回のみインターネット接続が必要（以降はオフライン動作）
 
 ## 変更履歴
+
+### v21 — クロスプラットフォームフォント統一・PDF描画修正
+- **Webフォント導入（Noto Serif JP）**: Google FontsからNoto Serif JP（wght 400/700）を読み込み、`--font-serif`の先頭に配置。Windows（Yu Mincho）/ iOS（Hiragino Mincho ProN）のフォント差異によるレイアウトずれ（モバイルで5ページ化等）を解消し、全プラットフォームで同一描画を保証
+- **フォント読み込み待機**: PDF生成（`generatePDF`）およびプレビュー表示（`showPreview`）で`document.fonts.ready`を待機し、Webフォント読み込み完了後にレンダリング・キャプチャを実行
+- **PDF写真セル描画修正**: html2canvasの`onclone`コールバックで写真セルの`transparent`ボーダーを`white`に変更し、写真の上に罫線が描画される問題を修正。写真ボックスに`background: white; z-index: 10`を設定
+- **PDF縦線途切れ修正**: html2canvasの`onclone`コールバックで`resume-birth-table`と`resume-info-table`に`margin-top: -1px`を設定し、テーブル間のサブピクセルギャップを解消
+- **写真ボックスCSS強化**: `.photo-box`に`z-index: 2; background: white;`を追加し、プレビューでも罫線が写真の後ろに隠れるように改善
+- **Service Worker**: キャッシュバージョンを v21 に更新
 
 ### v20 — モバイルプレビューPC一致・改ページ実行順修正
 - **モバイルプレビューのPC一致**: モバイルCSS`@media (max-width: 768px)`でA4ページに`border: 1px solid #ccc`を適用していたことで`box-sizing: border-box`によりコンテンツ領域が2px縮小し、テキスト折り返しがPCと異なっていた問題を修正。`outline`（レイアウト不変）に変更し、`width`/`height`/`font-size`の冗長な上書きを削除

@@ -23,6 +23,7 @@
 | アプリ形式 | PWA（Progressive Web App） |
 | フロントエンド | HTML / CSS / JavaScript（フレームワーク不使用） |
 | PDF生成 | jsPDF + html2canvas（CDN → Service Workerキャッシュ） |
+| フォント | Noto Serif JP（Google Fonts CDN → Service Workerキャッシュ） |
 | データ保存 | IndexedDB |
 | ホスティング | GitHub Pages（HTTPS） |
 | 対応環境 | Windows（Chrome/Edge）、iPhone（Safari）、Android（Chrome） |
@@ -442,6 +443,11 @@ ResumeCreater/
   - YYMMDD は提出日
 - 個別出力（履歴書のみ / 職務経歴書のみ）および一括出力に対応
 - iPhone/Androidでは共有シートが開き保存先を選択可能、Windowsではダウンロードフォルダに保存
+- PDF生成前に`document.fonts.ready`を待機し、Webフォント読み込み完了を保証
+- html2canvasの`onclone`コールバックでPDF描画を最適化:
+  - 写真セルの`transparent`ボーダーを`white`に変更（html2canvasがtransparentを正しく処理せず罫線が写真上に描画される問題を回避）
+  - 写真ボックスに`background: white; z-index: 10`を設定
+  - テーブル間に`margin-top: -1px; position: relative`を設定してサブピクセルギャップを解消（縦線途切れ防止）
 
 ### 8.6 オフライン動作
 
@@ -483,11 +489,13 @@ ResumeCreater/
 #### モバイルプレビューの一貫性
 
 - A4ページの内部レイアウトはPC・スマホで完全に同一（同じwidth/height/font-size/padding）
+- **Noto Serif JP**（Google Fonts）を全プラットフォーム共通フォントとして使用し、フォントメトリクス差異によるレイアウトずれを解消
 - スマホでは `transform: scale()` で視覚的に縮小表示のみ（レイアウト変更なし）
 - `.a4-page` に `-webkit-text-size-adjust: 100%` を設定し、モバイルブラウザの自動テキストサイズ調整を防止
 - モバイルCSSメディアクエリではA4ページのレイアウト影響プロパティ（width/height/font-size/border）を上書きしない
 - `outline`（レイアウト不変）でモバイルプレビューのページ境界線を表示
 - `scalePreviewPages()`: 各ページの実際の`offsetWidth/offsetHeight`からスケール率を算出し、ネガティブマージンで重なりを防止
+- プレビュー表示時に`document.fonts.ready`を待機し、Webフォント読み込み後に溢れ判定・スケーリングを実行
 
 ### 9.2 カラースキーム
 

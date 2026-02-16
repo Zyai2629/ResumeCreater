@@ -22,7 +22,7 @@
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
   --font: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
-  --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif;
+  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif;
 }
 
 html {
@@ -760,6 +760,8 @@ body {
   top: -13.1mm;
   left: 6mm;
   overflow: hidden;
+  z-index: 2;
+  background: white;
 }
 
 /* ====== 生年月日・性別テーブル ====== */

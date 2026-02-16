@@ -17,6 +17,11 @@ const PdfGenerator = (() => {
       throw new Error('PDFに変換するページがありません');
     }
 
+    // Webフォント読み込み完了を待機
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     // jsPDF を初期化（A4縦）
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
@@ -36,6 +41,37 @@ const PdfGenerator = (() => {
         backgroundColor: '#ffffff',
         width: el.scrollWidth,
         height: el.scrollHeight,
+        onclone: (_doc, clonedEl) => {
+          // html2canvas向けの補正:
+          // 1. 写真セルの transparent border を白に変更
+          //    （html2canvas では transparent が正しく処理されず罫線が写真の上に描画される場合がある）
+          //    white にすることで border-collapse で table border に勝ちつつ視覚的に非表示
+          const photoCell = clonedEl.querySelector('.photo-cell');
+          if (photoCell) {
+            photoCell.style.setProperty('border-top', '2px solid white', 'important');
+            photoCell.style.setProperty('border-right', '2px solid white', 'important');
+            photoCell.style.setProperty('border-bottom', '2px solid white', 'important');
+          }
+          // 2. 写真ボックスの背景を白にして罫線を隠す
+          const photoBox = clonedEl.querySelector('.photo-box');
+          if (photoBox) {
+            photoBox.style.background = 'white';
+            photoBox.style.zIndex = '10';
+          }
+          // 3. テーブル間のサブピクセルギャップを解消（縦線の途切れ防止）
+          const birthTable = clonedEl.querySelector('.resume-birth-table');
+          if (birthTable) {
+            birthTable.style.marginTop = '-1px';
+            birthTable.style.position = 'relative';
+            birthTable.style.zIndex = '1';
+          }
+          const addressTable = clonedEl.querySelector('.resume-info-table');
+          if (addressTable) {
+            addressTable.style.marginTop = '-1px';
+            addressTable.style.position = 'relative';
+            addressTable.style.zIndex = '2';
+          }
+        },
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
