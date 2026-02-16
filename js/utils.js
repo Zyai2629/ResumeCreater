@@ -284,27 +284,6 @@ const Utils = (() => {
     }
     } // end overflow handling
 
-    // 全職務経歴書ページのページ番号を更新
-    const allCareerPages = container.querySelectorAll('.career-page');
-    const totalPages = allCareerPages.length;
-    allCareerPages.forEach((page, i) => {
-      let pageNum = page.querySelector('.page-number');
-      if (!pageNum) {
-        pageNum = document.createElement('div');
-        pageNum.className = 'page-number';
-        page.appendChild(pageNum);
-      }
-      pageNum.textContent = `${i + 1} / ${totalPages}`;
-    });
-
-    // 3ページ以上になった場合は警告ダイアログ
-    if (totalPages >= 3) {
-      showToast('職務経歴書が3ページ以上になっています。内容を簡潔にすることを検討してください。', 'error', 5000);
-      setTimeout(() => {
-        alert('⚠ 職務経歴書が' + totalPages + 'ページになっています。\n内容を簡潔にして2ページに収めることを検討してください。');
-      }, 200);
-    }
-
     // --- 資格セクション等を最終職歴ページの余白に統合（try-and-see方式） ---
     const careerPage2After = container.querySelector('#career-page2');
     if (careerPage2After) {
@@ -340,20 +319,28 @@ const Utils = (() => {
           // 収まった → 空のpage2を削除
           careerPage2After.remove();
         }
-
-        // ページ番号を再更新
-        const updatedPages = container.querySelectorAll('.career-page');
-        const updatedTotal = updatedPages.length;
-        updatedPages.forEach((page, i) => {
-          let pn = page.querySelector('.page-number');
-          if (!pn) {
-            pn = document.createElement('div');
-            pn.className = 'page-number';
-            page.appendChild(pn);
-          }
-          pn.textContent = `${i + 1} / ${updatedTotal}`;
-        });
       }
+    }
+
+    // 統合後の最終ページ数でページ番号を更新し、警告を出す
+    const finalCareerPages = container.querySelectorAll('.career-page');
+    const finalTotal = finalCareerPages.length;
+    finalCareerPages.forEach((page, i) => {
+      let pn = page.querySelector('.page-number');
+      if (!pn) {
+        pn = document.createElement('div');
+        pn.className = 'page-number';
+        page.appendChild(pn);
+      }
+      pn.textContent = `${i + 1} / ${finalTotal}`;
+    });
+
+    // 3ページ以上になった場合は警告ダイアログ（統合後に判定）
+    if (finalTotal >= 3) {
+      showToast('職務経歴書が3ページ以上になっています。内容を簡潔にすることを検討してください。', 'error', 5000);
+      setTimeout(() => {
+        alert('⚠ 職務経歴書が' + finalTotal + 'ページになっています。\n内容を簡潔にして2ページに収めることを検討してください。');
+      }, 200);
     }
   }
 

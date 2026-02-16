@@ -181,6 +181,18 @@ const App = (() => {
         });
       }
     });
+
+    // アドバンストモード初期値リセット
+    const btnResetAdv = document.getElementById('btn-reset-advanced');
+    if (btnResetAdv) {
+      btnResetAdv.addEventListener('click', () => {
+        advancedSettings = { ...Templates.DEFAULT_OPTIONS, advancedMode: true };
+        saveAdvancedSettings();
+        applyAdvancedUI();
+        Utils.showToast('アドバンストモードの設定を初期値に戻しました');
+        if (currentScreen === 'preview') showPreview();
+      });
+    }
   }
 
   // ================================================================
