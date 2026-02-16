@@ -665,6 +665,8 @@ body {
   color: #000;
   position: relative;
   overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* 履歴書ページ：左右均等の余白 */
@@ -1303,13 +1305,10 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* スマホではページをスケーリングで縮小表示 */
+  /* スマホではページをスケーリングで縮小表示（レイアウトはPC版と完全同一） */
   #preview-area .a4-page {
-    width: 210mm;
-    height: 297mm;
-    font-size: 10pt;
     box-shadow: none;
-    border: 1px solid #ccc;
+    outline: 1px solid #ccc;
     transform-origin: top left;
     margin-bottom: 8px;
   }

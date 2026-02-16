@@ -83,6 +83,12 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v20 — モバイルプレビューPC一致・改ページ実行順修正
+- **モバイルプレビューのPC一致**: モバイルCSS`@media (max-width: 768px)`でA4ページに`border: 1px solid #ccc`を適用していたことで`box-sizing: border-box`によりコンテンツ領域が2px縮小し、テキスト折り返しがPCと異なっていた問題を修正。`outline`（レイアウト不変）に変更し、`width`/`height`/`font-size`の冗長な上書きを削除
+- **text-size-adjust追加**: `.a4-page`に`-webkit-text-size-adjust: 100%`を設定し、モバイルブラウザの自動テキストサイズ調整を防止
+- **scalePreviewPages改善**: ハードコードされたA4サイズ定数（793.7px/1122.5px）から`offsetWidth/offsetHeight`による実測値に変更。各ページの実際のサイズからスケール率を算出
+- **Service Worker**: キャッシュバージョンを v20 に更新
+
 ### v19 — 改ページ統合バグ修正・アドバンストモード初期値リセット・タイトルアイコン修正
 - **改ページ統合の実行順修正**: `adjustCareerOverflow`内で、3ページ警告(`alert()`)がtry-and-see統合より前に実行されていたバグを修正。統合→ページ番号更新→警告の正しい順序に変更し、統合によりページ数が減る場合に不要な警告が出なくなった
 - **アドバンストモード初期値リセット**: プレビュー画面のアドバンストモードパネルに「初期値に戻す」ボタンを追加。クリックで行数設定を`DEFAULT_OPTIONS`（P1:16行/P2:3行/資格:3行）に戻す

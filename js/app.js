@@ -275,25 +275,25 @@ const App = (() => {
     if (!pages.length) return;
     const viewportWidth = window.innerWidth;
     if (viewportWidth >= 768) {
-      // デスクトップ: スケーリング不要
+      // デスクトップ: スケーリング不要（A4ページはCSS原寸で表示）
       pages.forEach((p) => {
         p.style.transform = '';
         p.style.marginBottom = '';
-        p.style.width = '';
       });
       return;
     }
-    const a4WidthPx = 793.7; // 210mm in px at 96dpi
-    const a4HeightPx = 1122.5; // 297mm in px at 96dpi
+    // モバイル: A4ページをviewport幅に合わせて縮小表示
+    // ※ページの内部レイアウトは変更せず、transform: scale() で視覚的に縮小のみ
     const padding = 8;
-    const scale = Math.min(1, (viewportWidth - padding) / a4WidthPx);
-    const scaledHeight = a4HeightPx * scale;
     pages.forEach((p) => {
+      const a4Width = p.offsetWidth;
+      const a4Height = p.offsetHeight;
+      const scale = Math.min(1, (viewportWidth - padding) / a4Width);
+      const scaledHeight = a4Height * scale;
       p.style.transformOrigin = 'top left';
       p.style.transform = `scale(${scale})`;
       // 縮小分のネガティブマージンで重なりを防止
-      p.style.height = `${a4HeightPx}px`;
-      p.style.marginBottom = `${-(a4HeightPx - scaledHeight) + 8}px`;
+      p.style.marginBottom = `${-(a4Height - scaledHeight) + 8}px`;
     });
   }
 

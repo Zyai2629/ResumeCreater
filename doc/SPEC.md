@@ -1,6 +1,6 @@
 # NextPass 仕様書
 
-> 最終更新: 2026年2月16日 (v18)
+> 最終更新: 2026年2月16日 (v20)
 
 ## 1. 概要
 
@@ -332,8 +332,18 @@ ResumeCreater/
 
 #### ページ数警告
 - 職務経歴書が**3ページ以上**になった場合、`showToast()` + `alert()` ダイアログで警告を表示
-- 入力画面では `scheduleCareerPageCheck()` により2秒ディバウンスで非同期チェック（pdf-render-areaで一時描画）
+- **重要**: 警告は try-and-see 統合の後に判定する（統合でページが減る可能性があるため）
+- 入力画面では `scheduleCareerPageCheck()` によ2秒ディバウンスで非同期チェック（pdf-render-areaで一時描画）
 - プレビュー画面では `adjustCareerOverflow` 内で直接判定
+
+#### 実行順序
+
+`adjustCareerOverflow` の内部処理は以下の順序で実行される：
+
+1. **溢れ検出・移動**: career-page1の各career-blockが安全領域を超えているか判定し、超過ブロックを続きページに移動
+2. **try-and-see統合**: career-page2の内容を最終職歴ページに一時移動し、溢れがなければ統合、あれば戻す
+3. **ページ番号更新**: 統合後の最終ページ数で「N / M」形式に更新
+4. **3ページ警告**: 統合後のページ数が3以上なら警告表示
 
 #### 資格セクションの同ページ統合（try-and-see方式）
 - career-page2（資格・スキル・志望動機セクション）の内容を一時的に最終職歴ページに移動
@@ -469,6 +479,15 @@ ResumeCreater/
 - iPhone SE / Android端末 / iPad / Windows PC を網羅
 - タッチ操作に最適化: ボタンは最低44px × 44px のタップ領域を確保
 - フォーム入力欄は十分な高さ・余白を確保
+
+#### モバイルプレビューの一貫性
+
+- A4ページの内部レイアウトはPC・スマホで完全に同一（同じwidth/height/font-size/padding）
+- スマホでは `transform: scale()` で視覚的に縮小表示のみ（レイアウト変更なし）
+- `.a4-page` に `-webkit-text-size-adjust: 100%` を設定し、モバイルブラウザの自動テキストサイズ調整を防止
+- モバイルCSSメディアクエリではA4ページのレイアウト影響プロパティ（width/height/font-size/border）を上書きしない
+- `outline`（レイアウト不変）でモバイルプレビューのページ境界線を表示
+- `scalePreviewPages()`: 各ページの実際の`offsetWidth/offsetHeight`からスケール率を算出し、ネガティブマージンで重なりを防止
 
 ### 9.2 カラースキーム
 
