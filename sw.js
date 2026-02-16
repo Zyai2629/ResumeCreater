@@ -2,7 +2,7 @@
 // sw.js — Service Worker（オフラインキャッシュ）
 // ============================================================
 
-const CACHE_NAME = 'resume-creater-v15';
+const CACHE_NAME = 'resume-creater-v16';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -45,22 +45,28 @@ self.addEventListener('activate', (event) => {
 
 // フェッチ時にキャッシュファーストで応答
 self.addEventListener('fetch', (event) => {
+  // GET以外のリクエストやblob/data URLはキャッシュしない
+  if (event.request.method !== 'GET') return;
+  const url = event.request.url;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
-        // 成功したレスポンスをキャッシュに追加
         if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+          // URLが長すぎるリクエストはキャッシュしない
+          if (url.length < 2048) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone).catch(() => {});
+            }).catch(() => {});
+          }
         }
         return networkResponse;
       }).catch(() => {
-        // オフラインでキャッシュにない場合
         if (event.request.destination === 'document') {
           return caches.match('./index.html');
         }

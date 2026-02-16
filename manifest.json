@@ -1,6 +1,6 @@
 {
-  "name": "職務経歴書ジェネレーター",
-  "short_name": "経歴書",
+  "name": "NextPass",
+  "short_name": "NextPass",
   "description": "履歴書・職務経歴書をオフラインで作成・PDF出力するPWAアプリ",
   "start_url": "./index.html",
   "display": "standalone",

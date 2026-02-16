@@ -149,6 +149,9 @@ const App = (() => {
     document.getElementById('btn-export-json').addEventListener('click', exportJSON);
     document.getElementById('btn-import-json').addEventListener('click', importJSON);
 
+    // フォーム送信を防止（ボタンクリックでの意図しない送信防止）
+    document.getElementById('application-form').addEventListener('submit', (ev) => ev.preventDefault());
+
     // リセット
     document.getElementById('btn-reset').addEventListener('click', resetAllData);
 
@@ -649,6 +652,7 @@ const App = (() => {
 
       await DB.saveCareer(entry);
       careerData = await DB.loadCareer();
+      scheduleCareerPageCheck();
     }, 500);
 
     // 全inputとselectの変更を監視
@@ -696,6 +700,7 @@ const App = (() => {
       await DB.deleteCareer(id);
       careerData = await DB.loadCareer();
       renderCareerList();
+      scheduleCareerPageCheck();
     });
 
     // カード並び替え
@@ -777,6 +782,7 @@ const App = (() => {
     await DB.saveCareer(entry);
     careerData = await DB.loadCareer();
     renderCareerList();
+    scheduleCareerPageCheck();
   }
 
   async function swapCareerOrder(id, direction) {
@@ -856,6 +862,23 @@ const App = (() => {
     await DB.saveQualification(entry);
     qualificationsData = await DB.loadQualifications();
     renderQualificationsList();
+  }
+
+  // ================================================================
+  // 入力画面での3ページ警告チェック
+  // ================================================================
+  let _pageCheckTimer = null;
+  function scheduleCareerPageCheck() {
+    clearTimeout(_pageCheckTimer);
+    _pageCheckTimer = setTimeout(async () => {
+      if (currentScreen !== 'input') return;
+      if (careerData.length === 0) return;
+      const app = currentAppId ? applicationsData.find(a => a.id === currentAppId) : applicationsData[0];
+      const container = document.getElementById('pdf-render-area');
+      container.innerHTML = Templates.generateCareerHTML(profileData, careerData, qualificationsData, app, 1, 2);
+      await Utils.adjustCareerOverflow(container);
+      container.innerHTML = '';
+    }, 2000);
   }
 
   // ================================================================
@@ -985,8 +1008,8 @@ const App = (() => {
       <div class="skill-entry-header">
         <span class="skill-num">${circled[i] || (i + 1)}</span>
         <input type="text" class="skill-title-input" value="${Utils.escapeHtml(s.title || '')}" placeholder="スキルタイトル">
-        <button class="btn-move btn-move-up-skill" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
-        <button class="btn-move btn-move-down-skill" title="下へ" ${i === skills.length - 1 ? 'disabled' : ''}>▼</button>
+        <button type="button" class="btn-move btn-move-up-skill" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
+        <button type="button" class="btn-move btn-move-down-skill" title="下へ" ${i === skills.length - 1 ? 'disabled' : ''}>▼</button>
         <button type="button" class="btn-delete btn-delete-skill" title="削除">✕</button>
       </div>
       <textarea class="skill-desc-input" placeholder="説明">${Utils.escapeHtml(s.description || '')}</textarea>
@@ -1098,13 +1121,13 @@ const App = (() => {
       const dutiesHtml = duties.map((d, i) => `
         <div class="list-input-row" data-list-index="${i}">
           <input type="text" class="override-duty-input" value="${Utils.escapeHtml(d)}" placeholder="業務内容">
-          <button class="btn-delete btn-delete-override-duty" title="削除">✕</button>
+          <button type="button" class="btn-delete btn-delete-override-duty" title="削除">✕</button>
         </div>`).join('');
 
       const achievementsHtml = achievements.map((a, i) => `
         <div class="list-input-row" data-list-index="${i}">
           <input type="text" class="override-achievement-input" value="${Utils.escapeHtml(a)}" placeholder="成果">
-          <button class="btn-delete btn-delete-override-achievement" title="削除">✕</button>
+          <button type="button" class="btn-delete btn-delete-override-achievement" title="削除">✕</button>
         </div>`).join('');
 
       return `
@@ -1215,6 +1238,7 @@ const App = (() => {
     app.careerOverrides = collectCareerOverrides();
     await DB.saveApplication(app);
     applicationsData = await DB.loadApplications();
+    scheduleCareerPageCheck();
   }
 
   function collectCareerOverrides() {

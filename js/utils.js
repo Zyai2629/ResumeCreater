@@ -305,59 +305,54 @@ const Utils = (() => {
       }, 200);
     }
 
-    // --- 資格セクション等を最終職歴ページの余白に統合 ---
+    // --- 資格セクション等を最終職歴ページの余白に統合（try-and-see方式） ---
     const careerPage2After = container.querySelector('#career-page2');
     if (careerPage2After) {
-      // 最後の職歴ページ（career-page2の直前）を特定
       const careerPagesArr = Array.from(container.querySelectorAll('.career-page'));
       const page2Index = careerPagesArr.indexOf(careerPage2After);
       if (page2Index > 0) {
         const lastCareerPage = careerPagesArr[page2Index - 1];
-        const lastPageRect = lastCareerPage.getBoundingClientRect();
-        const lastPxPerMm = lastPageRect.height / 297;
-        const lastSafeBottom = lastPageRect.top + (297 - bottomPaddingMm) * lastPxPerMm;
-
-        // career-page2の全セクション（資格・スキル・志望動機・以上）を取得
+        const pageNumber = lastCareerPage.querySelector('.page-number');
         const page2Sections = Array.from(careerPage2After.querySelectorAll('.career-section, .career-end'));
-        // page2全体の高さを概算（各セクションの高さの合計）
-        let totalPage2Height = 0;
+
+        // 一時的にlastCareerPageに移動して溢れを確認
         page2Sections.forEach(sec => {
-          totalPage2Height += sec.getBoundingClientRect().height;
+          lastCareerPage.insertBefore(sec, pageNumber);
         });
 
-        // 最終職歴ページの使用済み領域
-        const lastPageContent = Array.from(lastCareerPage.children).filter(
-          el => !el.classList.contains('page-number')
+        await new Promise(r => setTimeout(r, 100));
+
+        // 溢れチェック
+        const checkRect = lastCareerPage.getBoundingClientRect();
+        const checkPxPerMm = checkRect.height / 297;
+        const checkSafeBottom = checkRect.top + (297 - bottomPaddingMm) * checkPxPerMm;
+        const hasOverflow = page2Sections.some(sec =>
+          sec.getBoundingClientRect().bottom > checkSafeBottom + 1
         );
-        let lastContentBottom = lastPageRect.top;
-        lastPageContent.forEach(el => {
-          const r = el.getBoundingClientRect();
-          if (r.bottom > lastContentBottom) lastContentBottom = r.bottom;
-        });
 
-        const remainingSpace = lastSafeBottom - lastContentBottom;
-
-        // 余白が十分ならpage2の内容を最終職歴ページに移動
-        if (remainingSpace >= totalPage2Height + 5 * lastPxPerMm) {
+        if (hasOverflow) {
+          // 収まらない → page2に戻す
+          const page2PageNum = careerPage2After.querySelector('.page-number');
           page2Sections.forEach(sec => {
-            lastCareerPage.insertBefore(sec, lastCareerPage.querySelector('.page-number'));
+            careerPage2After.insertBefore(sec, page2PageNum);
           });
-          // 空になったcareer-page2を削除
+        } else {
+          // 収まった → 空のpage2を削除
           careerPage2After.remove();
-
-          // ページ番号を再更新
-          const updatedPages = container.querySelectorAll('.career-page');
-          const updatedTotal = updatedPages.length;
-          updatedPages.forEach((page, i) => {
-            let pn = page.querySelector('.page-number');
-            if (!pn) {
-              pn = document.createElement('div');
-              pn.className = 'page-number';
-              page.appendChild(pn);
-            }
-            pn.textContent = `${i + 1} / ${updatedTotal}`;
-          });
         }
+
+        // ページ番号を再更新
+        const updatedPages = container.querySelectorAll('.career-page');
+        const updatedTotal = updatedPages.length;
+        updatedPages.forEach((page, i) => {
+          let pn = page.querySelector('.page-number');
+          if (!pn) {
+            pn = document.createElement('div');
+            pn.className = 'page-number';
+            page.appendChild(pn);
+          }
+          pn.textContent = `${i + 1} / ${updatedTotal}`;
+        });
       }
     }
   }
