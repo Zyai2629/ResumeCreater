@@ -889,6 +889,9 @@ const App = (() => {
     // スキル・強み
     renderSkillsList(app?.skills || []);
 
+    // 応募先別業務内容
+    renderCareerOverrides(app);
+
     // 削除ボタンの有効/無効
     const btnDel = document.getElementById('btn-delete-app');
     if (btnDel) btnDel.disabled = !currentAppId;
@@ -906,6 +909,9 @@ const App = (() => {
     }
     // スキルを収集
     app.skills = collectSkills();
+
+    // 応募先別業務内容を収集
+    app.careerOverrides = collectCareerOverrides();
 
     await DB.saveApplication(app);
     applicationsData = await DB.loadApplications();
@@ -1066,6 +1072,160 @@ const App = (() => {
     applicationsData = await DB.loadApplications();
     const updatedApp = applicationsData.find((a) => a.id === currentAppId);
     renderSkillsList(updatedApp?.skills || []);
+  }
+
+  // ================================================================
+  // 応募先別業務内容・成果
+  // ================================================================
+  function renderCareerOverrides(app) {
+    const container = document.getElementById('career-overrides-list');
+    if (!container) return;
+    if (!app || careerData.length === 0) {
+      container.innerHTML = '<p class="hint-text">職務経歴が登録されていません。「職務経歴」タブで追加してください。</p>';
+      return;
+    }
+
+    const overrides = app.careerOverrides || {};
+
+    container.innerHTML = careerData.map((career) => {
+      const override = overrides[career.id];
+      const duties = override ? (override.duties || []) : (career.duties || []);
+      const achievements = override ? (override.achievements || []) : (career.achievements || []);
+      const companyName = career.companyName || '（未入力）';
+      const startLabel = career.startDate ? Utils.formatYearMonth(career.startDate) : '?';
+      const endLabel = career.endDate === '現在' ? '現在' : (career.endDate ? Utils.formatYearMonth(career.endDate) : '?');
+
+      const dutiesHtml = duties.map((d, i) => `
+        <div class="list-input-row" data-list-index="${i}">
+          <input type="text" class="override-duty-input" value="${Utils.escapeHtml(d)}" placeholder="業務内容">
+          <button class="btn-delete btn-delete-override-duty" title="削除">✕</button>
+        </div>`).join('');
+
+      const achievementsHtml = achievements.map((a, i) => `
+        <div class="list-input-row" data-list-index="${i}">
+          <input type="text" class="override-achievement-input" value="${Utils.escapeHtml(a)}" placeholder="成果">
+          <button class="btn-delete btn-delete-override-achievement" title="削除">✕</button>
+        </div>`).join('');
+
+      return `
+      <div class="career-override-card" data-career-id="${career.id}">
+        <div class="career-entry-header">
+          <span class="career-entry-num">${Utils.escapeHtml(companyName)}</span>
+          <span style="font-size:12px;color:var(--text-light);">${Utils.escapeHtml(startLabel)} ～ ${Utils.escapeHtml(endLabel)}</span>
+        </div>
+
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-top:8px;">業務内容</label>
+        <div class="list-input-area override-duties-area">
+          ${dutiesHtml}
+        </div>
+        <button type="button" class="btn-add-list-item btn-add-override-duty">＋ 業務内容を追加</button>
+
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-top:8px;">業務上の工夫・成果</label>
+        <div class="list-input-area override-achievements-area">
+          ${achievementsHtml}
+        </div>
+        <button type="button" class="btn-add-list-item btn-add-override-achievement">＋ 成果を追加</button>
+      </div>`;
+    }).join('');
+
+    setupCareerOverrideEvents(container);
+  }
+
+  function setupCareerOverrideEvents(container) {
+    container.querySelectorAll('.career-override-card').forEach(card => {
+      const careerId = Number(card.dataset.careerId);
+
+      // 自動保存
+      card.querySelectorAll('.override-duty-input, .override-achievement-input').forEach(input => {
+        input.addEventListener('input', debounce(() => saveCareerOverridesFromDOM(), 500));
+      });
+
+      // 業務内容追加
+      card.querySelector('.btn-add-override-duty').addEventListener('click', async () => {
+        await saveCareerOverridesFromDOM();
+        const app = applicationsData.find(a => a.id === currentAppId);
+        if (!app) return;
+        if (!app.careerOverrides) app.careerOverrides = {};
+        if (!app.careerOverrides[careerId]) {
+          const career = careerData.find(c => c.id === careerId);
+          app.careerOverrides[careerId] = {
+            duties: [...(career?.duties || [])],
+            achievements: [...(career?.achievements || [])]
+          };
+        }
+        app.careerOverrides[careerId].duties.push('');
+        await DB.saveApplication(app);
+        applicationsData = await DB.loadApplications();
+        renderCareerOverrides(applicationsData.find(a => a.id === currentAppId));
+      });
+
+      // 成果追加
+      card.querySelector('.btn-add-override-achievement').addEventListener('click', async () => {
+        await saveCareerOverridesFromDOM();
+        const app = applicationsData.find(a => a.id === currentAppId);
+        if (!app) return;
+        if (!app.careerOverrides) app.careerOverrides = {};
+        if (!app.careerOverrides[careerId]) {
+          const career = careerData.find(c => c.id === careerId);
+          app.careerOverrides[careerId] = {
+            duties: [...(career?.duties || [])],
+            achievements: [...(career?.achievements || [])]
+          };
+        }
+        app.careerOverrides[careerId].achievements.push('');
+        await DB.saveApplication(app);
+        applicationsData = await DB.loadApplications();
+        renderCareerOverrides(applicationsData.find(a => a.id === currentAppId));
+      });
+
+      // 業務内容削除
+      card.querySelectorAll('.btn-delete-override-duty').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.closest('.list-input-row').dataset.listIndex);
+          await saveCareerOverridesFromDOM();
+          const app = applicationsData.find(a => a.id === currentAppId);
+          if (!app?.careerOverrides?.[careerId]) return;
+          app.careerOverrides[careerId].duties.splice(idx, 1);
+          await DB.saveApplication(app);
+          applicationsData = await DB.loadApplications();
+          renderCareerOverrides(applicationsData.find(a => a.id === currentAppId));
+        });
+      });
+
+      // 成果削除
+      card.querySelectorAll('.btn-delete-override-achievement').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.closest('.list-input-row').dataset.listIndex);
+          await saveCareerOverridesFromDOM();
+          const app = applicationsData.find(a => a.id === currentAppId);
+          if (!app?.careerOverrides?.[careerId]) return;
+          app.careerOverrides[careerId].achievements.splice(idx, 1);
+          await DB.saveApplication(app);
+          applicationsData = await DB.loadApplications();
+          renderCareerOverrides(applicationsData.find(a => a.id === currentAppId));
+        });
+      });
+    });
+  }
+
+  async function saveCareerOverridesFromDOM() {
+    if (!currentAppId) return;
+    const app = applicationsData.find(a => a.id === currentAppId);
+    if (!app) return;
+    app.careerOverrides = collectCareerOverrides();
+    await DB.saveApplication(app);
+    applicationsData = await DB.loadApplications();
+  }
+
+  function collectCareerOverrides() {
+    const overrides = {};
+    document.querySelectorAll('#career-overrides-list .career-override-card').forEach(card => {
+      const careerId = Number(card.dataset.careerId);
+      const duties = Array.from(card.querySelectorAll('.override-duty-input')).map(inp => inp.value);
+      const achievements = Array.from(card.querySelectorAll('.override-achievement-input')).map(inp => inp.value);
+      overrides[careerId] = { duties, achievements };
+    });
+    return overrides;
   }
 
   // ================================================================

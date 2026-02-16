@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2563eb">
   <meta name="description" content="履歴書・職務経歴書をオフラインで作成・PDF出力するPWAアプリ">
-  <title>履歴書メーカー</title>
+  <title>職務経歴書ジェネレーター</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
@@ -16,12 +16,12 @@
 
   <!-- ========== ヘッダー ========== -->
   <header class="app-header">
-    <span class="app-title">📄 履歴書メーカー</span>
+    <span class="app-title">📄 職務経歴書ジェネレーター</span>
     <nav class="header-nav">
       <button class="nav-btn active" id="btn-input">入力</button>
       <button class="nav-btn" id="btn-preview">プレビュー</button>
-      <button class="nav-btn nav-btn-icon" id="btn-import-json" title="JSONインポート">📤</button>
-      <button class="nav-btn nav-btn-icon" id="btn-export-json" title="JSONエクスポート">📥</button>
+      <button class="nav-btn nav-btn-icon" id="btn-import-json" title="JSONインポート">�</button>
+      <button class="nav-btn nav-btn-icon" id="btn-export-json" title="JSONエクスポート">💾</button>
       <button class="nav-btn nav-btn-icon nav-btn-danger" id="btn-reset" title="リセット">🗑</button>
     </nav>
   </header>
@@ -216,6 +216,10 @@
           <label for="app-careerMotivation">志望動機（経歴書用）</label>
           <textarea name="careerMotivation" id="app-careerMotivation" rows="6" placeholder="職務経歴書用の志望動機..."></textarea>
         </div>
+
+        <h3 class="section-title">職務経歴書 — 業務内容（応募先別）</h3>
+        <p class="hint-text">※ 各職務経歴の業務内容・成果を応募先ごとに設定できます。未入力の場合は職務経歴タブの値が使用されます。</p>
+        <div id="career-overrides-list"></div>
       </form>
     </div>
   </div>

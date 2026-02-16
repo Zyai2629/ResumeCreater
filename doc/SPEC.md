@@ -1,6 +1,6 @@
-# 履歴書・職務経歴書作成アプリ 仕様書
+# 職務経歴書ジェネレーター 仕様書
 
-> 最終更新: 2026年2月15日 (v16)
+> 最終更新: 2026年2月16日 (v17)
 
 ## 1. 概要
 
@@ -148,6 +148,7 @@ ResumeCreater/
 | skills | object[] | | 活かせるスキル・強み（{title, description}の配列） |
 | careerMotivation | string | | 志望動機（職務経歴書用） |
 | personalRequest | string | | 本人希望記入欄 |
+| careerOverrides | object | | 応募先別業務内容・成果 `{ [careerId]: { duties: string[], achievements: string[] } }` |
 | createdAt | string | ○ | 作成日時（ISO 8601） |
 | updatedAt | string | ○ | 更新日時（ISO 8601） |
 

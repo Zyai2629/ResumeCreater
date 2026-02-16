@@ -259,8 +259,12 @@ const Templates = (() => {
         periodHeaderText = `${startLabel}～${endLabel}　${e(c.companyName)}`;
       }
 
-      const dutiesList = (c.duties || []).filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
-      const achievementsList = (c.achievements || []).filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
+      // 応募先別の業務内容・成果オーバーライドを使用（ある場合）
+      const overrides = application?.careerOverrides?.[c.id];
+      const effectiveDuties = overrides ? (overrides.duties || []) : (c.duties || []);
+      const effectiveAchievements = overrides ? (overrides.achievements || []) : (c.achievements || []);
+      const dutiesList = effectiveDuties.filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
+      const achievementsList = effectiveAchievements.filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
 
       const contentRowspan = c.department ? 3 : 2;
 

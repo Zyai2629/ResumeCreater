@@ -193,7 +193,7 @@ const Utils = (() => {
    * @param {string} message
    * @param {string} type - 'success' | 'error' | 'info'
    */
-  function showToast(message, type = 'info') {
+  function showToast(message, type = 'info', duration = 2500) {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
@@ -202,7 +202,7 @@ const Utils = (() => {
     setTimeout(() => {
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
-    }, 2500);
+    }, duration);
   }
 
   /**
@@ -235,8 +235,9 @@ const Utils = (() => {
       return blockRect.bottom > safeBottom + 1; // 1px tolerance
     });
 
-    if (overflowBlocks.length === 0) return;
-
+    if (overflowBlocks.length === 0) {
+      // 溢れなしでもページ統合を試みる
+    } else {
     // career-page2（資格セクション等）の前に続きページを挿入
     const careerPage2 = container.querySelector('#career-page2');
     let insertBefore = careerPage2;
@@ -281,6 +282,7 @@ const Utils = (() => {
         currentSection = null;
       }
     }
+    } // end overflow handling
 
     // 全職務経歴書ページのページ番号を更新
     const allCareerPages = container.querySelectorAll('.career-page');
@@ -295,9 +297,12 @@ const Utils = (() => {
       pageNum.textContent = `${i + 1} / ${totalPages}`;
     });
 
-    // 3ページ以上になった場合は警告
+    // 3ページ以上になった場合は警告ダイアログ
     if (totalPages >= 3) {
-      showToast('職務経歴書が3ページ以上になっています。内容を簡潔にすることを検討してください。', 5000);
+      showToast('職務経歴書が3ページ以上になっています。内容を簡潔にすることを検討してください。', 'error', 5000);
+      setTimeout(() => {
+        alert('⚠ 職務経歴書が' + totalPages + 'ページになっています。\n内容を簡潔にして2ページに収めることを検討してください。');
+      }, 200);
     }
 
     // --- 資格セクション等を最終職歴ページの余白に統合 ---
