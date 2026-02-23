@@ -1085,18 +1085,13 @@ body {
 }
 
 .career-block {
-  border: 1px solid #000;
   margin-bottom: 0;
   page-break-inside: avoid;
 }
 
-.career-period-header {
-  font-size: 10pt;
-  font-weight: 600;
-  margin-bottom: 0;
-  padding: 4px 6px;
-  border-bottom: 1px solid #000;
-  background: #f9f9f9;
+/* 隣接する career-block の枠線の重複を解消 */
+.career-block + .career-block {
+  margin-top: -1px;
 }
 
 .career-dispatch {
@@ -1121,25 +1116,28 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0;
-  border: none;
+  border: 1px solid #000;
 }
 
 .career-content-table td {
-  border: none;
   padding: 4px 6px;
   font-size: 10pt;
   vertical-align: top;
 }
 
+.career-content-table .career-period-header {
+  font-weight: 600;
+  border-bottom: 1px solid #000;
+  background: #f9f9f9;
+}
+
 .career-content-table .company-details {
   border-bottom: 1px solid #000;
-  width: 85%;
 }
 
 .career-content-table .position-cell {
   border-left: 1px solid #000;
   border-bottom: 1px solid #000;
-  width: 15%;
   text-align: center;
   font-size: 10pt;
   overflow-wrap: break-word;

@@ -64,7 +64,19 @@ const PdfGenerator = (() => {
             photoBox.style.setProperty('z-index', '10', 'important');
             photoBox.style.setProperty('border', 'none', 'important');
           }
-          // 3. テーブル間のサブピクセルギャップを解消（縦線の途切れ防止）
+          // 3. 性別セル・連絡先セルの水平罫線を白に変更
+          //    birth-table/address-table の z-index が overlay と同等以上のため、
+          //    写真エリア右側（photo-box の左右外の帯）で罫線が表示される問題を解消
+          const genderCell = clonedEl.querySelector('.gender-cell');
+          if (genderCell) {
+            genderCell.style.setProperty('border-top', '2px solid white', 'important');
+            genderCell.style.setProperty('border-bottom', '2px solid white', 'important');
+          }
+          const contactCells = clonedEl.querySelectorAll('.contact-info-cell');
+          if (contactCells.length > 0) {
+            contactCells[0].style.setProperty('border-top', '2px solid white', 'important');
+          }
+          // 4. テーブル間のサブピクセルギャップを解消（縦線の途切れ防止）
           //    photo-cell border-bottom を white にしたことで nameTable 下端に
           //    2px の白隙間が生じるため、birthTable を 2px 上に重ねて隠す
           const birthTable = clonedEl.querySelector('.resume-birth-table');

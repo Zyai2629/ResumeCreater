@@ -84,6 +84,13 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v22c — 職務経歴書テーブル構造統一・写真エリアz-index修正
+- **職務経歴書テーブル構造をWord形式に統一**: 期間ヘッダーをテーブル内`<td colspan="3">`に移動、企業情報行から期間列を除外（`<td colspan="2">` + 職位セル）、`<colgroup>`で列幅を定義（24mm/auto/28mm）。期間列は部署・業務行のみに表示（部署がある場合はrowspan=2）
+- **CSSレイアウト変更**: `.career-block`から外枠`border: 1px solid #000`を削除し、`.career-content-table`に`border: 1px solid #000`を移動。隣接career-block間は`margin-top: -1px`で罫線重複を解消
+- **CSS詳細度修正**: `.career-content-table td { border: none; }`（詳細度0,1,1）が`.career-period-header`（0,1,0）を上書きしていた問題を解消。`.career-content-table .career-period-header`（0,2,0）に変更
+- **写真エリアz-indexスタッキング修正**: `onclone`で性別セル（gender-cell）の`border-top/bottom`を`2px solid white`に、連絡先セル（contact-info-cell）の`border-top`を`2px solid white`に変更。birth-table/address-tableがoverlayより上に描画される問題を解消
+- **Service Worker**: キャッシュバージョンを v22c に更新
+
 ### v22b — PDF写真エリア罫線の根本修正
 - **白オーバーレイ追加**: html2canvasの`onclone`コールバックでphoto-cell内に白い`div`（`z-index:1`）を追加し、サブピクセル誤差による罫線描画残りを完全に遮蔽。`left:0`で左罫線（氏名列との境界線）は保持
 - **写真ボックス破線枠の非表示**: PDFでは`photo-box`の`border: 1px dashed #999`（ガイド枠）を`border: none`に変更し、PDF出力をクリーンに

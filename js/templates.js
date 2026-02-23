@@ -266,17 +266,23 @@ const Templates = (() => {
       const dutiesList = effectiveDuties.filter(d => d).map((d) => `<li>${e(d)}</li>`).join('');
       const achievementsList = effectiveAchievements.filter(a => a).map((a) => `<li>${e(a)}</li>`).join('');
 
-      const contentRowspan = c.department ? 3 : 2;
+      // 部署ありの場合: period-col を rowspan=2 で dept-row に配置
+      // 部署なしの場合: period-col を duties 行に配置
+      const periodRowspan = c.department ? ' rowspan="2"' : '';
 
       careerBlocks += `
       <div class="career-block">
-        <div class="career-period-header">${periodHeaderText}</div>
         <table class="career-content-table">
+          <colgroup>
+            <col style="width:24mm">
+            <col>
+            <col style="width:28mm">
+          </colgroup>
           <tr>
-            <td class="period-col" rowspan="${contentRowspan}">
-              ${startLabel}<br>～<br>${endLabel}
-            </td>
-            <td class="company-details">
+            <td colspan="3" class="career-period-header">${periodHeaderText}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="company-details">
               ${c.businessContent ? `事業内容：${e(c.businessContent)}` : ''}<br>
               ${c.capital ? `資本金：${e(c.capital)}` : ''}${c.revenue ? `　売上高：${e(c.revenue)}` : ''}<br>
               ${c.employeeCount ? `従業員数：${e(c.employeeCount)}` : ''}${c.listing ? `　上場：${e(c.listing)}` : ''}
@@ -288,12 +294,18 @@ const Templates = (() => {
             </td>
           </tr>
           ${c.department ? `<tr class="dept-row">
-            <td class="duties-col" colspan="2">
+            <td class="period-col"${periodRowspan}>
+              ${startLabel}<br>～<br>${endLabel}
+            </td>
+            <td colspan="2" class="duties-col">
               <div class="career-department">${e(c.department)} にて従事</div>
             </td>
           </tr>` : ''}
           <tr>
-            <td class="duties-col" colspan="2">
+            ${!c.department ? `<td class="period-col">
+              ${startLabel}<br>～<br>${endLabel}
+            </td>` : ''}
+            <td colspan="2" class="duties-col">
               <div class="career-details">
                 ${dutiesList ? `<div class="detail-section"><span class="detail-label">【業務内容】</span><ul>${dutiesList}</ul></div>` : ''}
                 ${achievementsList ? `<div class="detail-section"><span class="detail-label">【業務上の工夫・成果】</span><ul>${achievementsList}</ul></div>` : ''}
