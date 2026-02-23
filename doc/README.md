@@ -84,6 +84,12 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v22 — 職務経歴書レイアウト調整・PDF描画修正
+- **所属セル幅縮小**: 職務経歴書の`position-cell`幅を22%→15%に縮小（約3文字分）、`company-details`を78%→85%に拡大。事業内容・資本金・売上高・従業員数・上場が3行に収まるレイアウトに調整
+- **PDF縦線途切れ修正**: html2canvasの`onclone`コールバックで`resume-birth-table`の`margin-top`を`-1px`→`-2px`に変更。photo-cellの`border-bottom: white`（2px）を完全にカバーし、氏名テーブル～生年月日テーブル間の縦線途切れを解消
+- **onclone不要処理の削除**: `resume-name-table`の`border-bottom: 2px solid #000`追加（v21で導入）がborder-collapse優先度により逆効果だったため削除。セル境界ルール（cell > table）で白い隙間が生じていた根本原因を解消
+- **Service Worker**: キャッシュバージョンを v22 に更新
+
 ### v21 — クロスプラットフォームフォント統一・PDF描画修正
 - **Webフォント導入（Noto Serif JP）**: Google FontsからNoto Serif JP（wght 400/700）を読み込み、`--font-serif`の先頭に配置。Windows（Yu Mincho）/ iOS（Hiragino Mincho ProN）のフォント差異によるレイアウトずれ（モバイルで5ページ化等）を解消し、全プラットフォームで同一描画を保証
 - **フォント読み込み待機**: PDF生成（`generatePDF`）およびプレビュー表示（`showPreview`）で`document.fonts.ready`を待機し、Webフォント読み込み完了後にレンダリング・キャプチャを実行

@@ -2,7 +2,7 @@
 // sw.js — Service Worker（オフラインキャッシュ）
 // ============================================================
 
-const CACHE_NAME = 'resume-creater-v21';
+const CACHE_NAME = 'resume-creater-v22';
 
 const ASSETS_TO_CACHE = [
   './',

@@ -1133,15 +1133,17 @@ body {
 
 .career-content-table .company-details {
   border-bottom: 1px solid #000;
-  width: 78%;
+  width: 85%;
 }
 
 .career-content-table .position-cell {
   border-left: 1px solid #000;
   border-bottom: 1px solid #000;
-  width: 22%;
+  width: 15%;
   text-align: center;
   font-size: 10pt;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 /* 期間列（career-content-table内） */

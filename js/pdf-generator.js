@@ -44,24 +44,25 @@ const PdfGenerator = (() => {
         onclone: (_doc, clonedEl) => {
           // html2canvas向けの補正:
           // 1. 写真セルの transparent border を白に変更
-          //    （html2canvas では transparent が正しく処理されず罫線が写真の上に描画される場合がある）
-          //    white にすることで border-collapse で table border に勝ちつつ視覚的に非表示
+          //    html2canvas は transparent を正しく処理せず罫線が写真の上に描画される
           const photoCell = clonedEl.querySelector('.photo-cell');
           if (photoCell) {
             photoCell.style.setProperty('border-top', '2px solid white', 'important');
             photoCell.style.setProperty('border-right', '2px solid white', 'important');
             photoCell.style.setProperty('border-bottom', '2px solid white', 'important');
           }
-          // 2. 写真ボックスの背景を白にして罫線を隠す
+          // 2. 写真ボックスの背景を白にして罫線を確実に隠す
           const photoBox = clonedEl.querySelector('.photo-box');
           if (photoBox) {
-            photoBox.style.background = 'white';
-            photoBox.style.zIndex = '10';
+            photoBox.style.setProperty('background', 'white', 'important');
+            photoBox.style.setProperty('z-index', '10', 'important');
           }
           // 3. テーブル間のサブピクセルギャップを解消（縦線の途切れ防止）
+          //    photo-cell border-bottom を white にしたことで nameTable 下端に
+          //    2px の白隙間が生じるため、birthTable を 2px 上に重ねて隠す
           const birthTable = clonedEl.querySelector('.resume-birth-table');
           if (birthTable) {
-            birthTable.style.marginTop = '-1px';
+            birthTable.style.marginTop = '-2px';
             birthTable.style.position = 'relative';
             birthTable.style.zIndex = '1';
           }

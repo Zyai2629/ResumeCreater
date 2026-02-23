@@ -447,7 +447,9 @@ ResumeCreater/
 - html2canvasの`onclone`コールバックでPDF描画を最適化:
   - 写真セルの`transparent`ボーダーを`white`に変更（html2canvasがtransparentを正しく処理せず罫線が写真上に描画される問題を回避）
   - 写真ボックスに`background: white; z-index: 10`を設定
-  - テーブル間に`margin-top: -1px; position: relative`を設定してサブピクセルギャップを解消（縦線途切れ防止）
+  - `resume-birth-table`に`margin-top: -2px`を設定してphoto-cellの`border-bottom: white`（2px）を完全カバー（縦線途切れ防止）
+  - `resume-info-table`に`margin-top: -1px; position: relative`を設定してサブピクセルギャップを解消
+  - 注意: `resume-name-table`に`border-bottom`を追加してはいけない（`border-collapse`のセル優先ルールにより逆効果）
 
 ### 8.6 オフライン動作
 
