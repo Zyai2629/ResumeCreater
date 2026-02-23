@@ -43,19 +43,26 @@ const PdfGenerator = (() => {
         height: el.scrollHeight,
         onclone: (_doc, clonedEl) => {
           // html2canvas向けの補正:
-          // 1. 写真セルの transparent border を白に変更
-          //    html2canvas は transparent を正しく処理せず罫線が写真の上に描画される
+          // 1. 写真セルの transparent border を白に変更（border-collapse の優先順位で
+          //    同幅のセルボーダーがテーブル外枠に勝つので、テーブル罫線を実質非表示にする）
           const photoCell = clonedEl.querySelector('.photo-cell');
           if (photoCell) {
             photoCell.style.setProperty('border-top', '2px solid white', 'important');
             photoCell.style.setProperty('border-right', '2px solid white', 'important');
             photoCell.style.setProperty('border-bottom', '2px solid white', 'important');
+            photoCell.style.setProperty('overflow', 'visible', 'important');
+            // 白オーバーレイで罫線の描画残り（html2canvas のサブピクセル誤差）を完全に遮蔽
+            // left:0 で左罫線（氏名列との境界線）は保持する
+            const overlay = _doc.createElement('div');
+            overlay.style.cssText = 'position:absolute;top:-16mm;left:0;right:-3mm;bottom:-2mm;background:white;z-index:1;';
+            photoCell.appendChild(overlay);
           }
-          // 2. 写真ボックスの背景を白にして罫線を確実に隠す
+          // 2. 写真ボックス: 背景白 + z-index で罫線の上に配置、破線ガイド枠は PDF に不要
           const photoBox = clonedEl.querySelector('.photo-box');
           if (photoBox) {
             photoBox.style.setProperty('background', 'white', 'important');
             photoBox.style.setProperty('z-index', '10', 'important');
+            photoBox.style.setProperty('border', 'none', 'important');
           }
           // 3. テーブル間のサブピクセルギャップを解消（縦線の途切れ防止）
           //    photo-cell border-bottom を white にしたことで nameTable 下端に

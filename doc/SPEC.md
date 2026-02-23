@@ -1,6 +1,6 @@
 # NextPass 仕様書
 
-> 最終更新: 2026年2月16日 (v20)
+> 最終更新: 2026年2月17日 (v22b)
 
 ## 1. 概要
 
@@ -324,7 +324,12 @@ ResumeCreater/
 #### 溢れ判定条件
 - ページの安全領域下端: `pageRect.top + (297 - 22) * pxPerMm`（下余白22mm）
 - 判定: `blockRect.bottom > safeBottom + 1`（**1px**の許容値）
-- 1pxでもページ番号領域に被る場合、そのブロックは次ページに移動する
+- 1pxでも安全領域を超えた場合、そのブロックは次ページに移動する
+
+#### ページ番号との重なり条件
+- ページ番号は `position: absolute; bottom: 10mm; right: 11mm;` に表示
+- 安全領域の下端（bottom: 22mm）はページ番号位置（bottom: 10mm）より上にあるため、溢れ判定が先に発動し通常は重ならない
+- 理論上、career-blockの内容がページ番号位置（bottom: 10mm ≈ y=287mm）に到達した場合に視覚的に重なるが、溢れ処理で先にブロックが移動されるため実運用では発生しない
 
 #### 続きページの作成
 - 溢れた`career-block`要素は自動的に新しい続きページに移動
@@ -445,8 +450,9 @@ ResumeCreater/
 - iPhone/Androidでは共有シートが開き保存先を選択可能、Windowsではダウンロードフォルダに保存
 - PDF生成前に`document.fonts.ready`を待機し、Webフォント読み込み完了を保証
 - html2canvasの`onclone`コールバックでPDF描画を最適化:
-  - 写真セルの`transparent`ボーダーを`white`に変更（html2canvasがtransparentを正しく処理せず罫線が写真上に描画される問題を回避）
-  - 写真ボックスに`background: white; z-index: 10`を設定
+  - 写真セルの`transparent`ボーダーを`white`に変更（border-collapseの同幅セル優先ルールでテーブル外枠罫線を非表示化）
+  - 写真セル内に白いオーバーレイ`div`（`z-index:1`）を追加し、html2canvasのサブピクセル誤差による罫線描画残りを完全に遮蔽。`left:0`で左罫線（氏名列との境界線）は保持
+  -  写真ボックスに`background: white; z-index: 10; border: none`を設定（破線ガイド枠をPDFでは非表示）
   - `resume-birth-table`に`margin-top: -2px`を設定してphoto-cellの`border-bottom: white`（2px）を完全カバー（縦線途切れ防止）
   - `resume-info-table`に`margin-top: -1px; position: relative`を設定してサブピクセルギャップを解消
   - 注意: `resume-name-table`に`border-bottom`を追加してはいけない（`border-collapse`のセル優先ルールにより逆効果）

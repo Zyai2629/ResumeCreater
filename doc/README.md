@@ -84,6 +84,12 @@ ResumeCreater/
 
 ## 変更履歴
 
+### v22b — PDF写真エリア罫線の根本修正
+- **白オーバーレイ追加**: html2canvasの`onclone`コールバックでphoto-cell内に白い`div`（`z-index:1`）を追加し、サブピクセル誤差による罫線描画残りを完全に遮蔽。`left:0`で左罫線（氏名列との境界線）は保持
+- **写真ボックス破線枠の非表示**: PDFでは`photo-box`の`border: 1px dashed #999`（ガイド枠）を`border: none`に変更し、PDF出力をクリーンに
+- **photo-cellのoverflow制御**: `overflow: visible`を明示的に設定し、オーバーレイが写真ボックスの配置領域を正しくカバー
+- **Service Worker**: キャッシュバージョンを v22b に更新（ブラウザキャッシュの強制更新）
+
 ### v22 — 職務経歴書レイアウト調整・PDF描画修正
 - **所属セル幅縮小**: 職務経歴書の`position-cell`幅を22%→15%に縮小（約3文字分）、`company-details`を78%→85%に拡大。事業内容・資本金・売上高・従業員数・上場が3行に収まるレイアウトに調整
 - **PDF縦線途切れ修正**: html2canvasの`onclone`コールバックで`resume-birth-table`の`margin-top`を`-1px`→`-2px`に変更。photo-cellの`border-bottom: white`（2px）を完全にカバーし、氏名テーブル～生年月日テーブル間の縦線途切れを解消
