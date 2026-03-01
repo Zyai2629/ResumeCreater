@@ -1,5 +1,13 @@
 # 変更履歴
 
+### v23 — 職務経歴書の行レベル分割（ページまたぎ対応）
+- **行レベル分割**: 1社の業務内容がページの安全領域を超えた場合、`<li>` / `detail-section` 単位で分割し、超過分を続きページに移動。従来のcareer-block丸ごと移動による大きな空白を解消
+- **続きブロック（`career-block-continuation`）**: 空の `period-col` + `duties-col` のテーブル構造で続きを描画。period-header・企業情報行は元ページに残る
+- **rowspan自動修正**: `period-col[rowspan]` がある場合、分割時にrowspanを除去しduties行に新しい空のperiod-colを追加
+- **無限ループ防止**: 先頭ブロックが分割不可能な場合はスキップし、後続ブロックのみ移動
+- **イテレーティブ処理**: 続きページでも溢れが発生する場合、while ループで再分割を繰り返し
+- **Service Worker**: キャッシュバージョンを v23 に更新
+
 ### v22c — 職務経歴書テーブル構造統一・写真エリアz-index修正
 - **職務経歴書テーブル構造をWord形式に統一**: 期間ヘッダーをテーブル内`<td colspan="3">`に移動、企業情報行から期間列を除外（`<td colspan="2">` + 職位セル）、`<colgroup>`で列幅を定義（24mm/auto/28mm）。期間列は部署・業務行のみに表示（部署がある場合はrowspan=2）
 - **CSSレイアウト変更**: `.career-block`から外枠`border: 1px solid #000`を削除し、`.career-content-table`に`border: 1px solid #000`を移動。隣接career-block間は`margin-top: -1px`で罫線重複を解消

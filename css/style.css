@@ -1094,6 +1094,11 @@ body {
   margin-top: -1px;
 }
 
+/* 分割された続きブロック：page-break-inside を許可 */
+.career-block-continuation {
+  page-break-inside: auto;
+}
+
 .career-dispatch {
   font-size: 10pt;
   margin-bottom: 4px;
@@ -1149,7 +1154,7 @@ body {
   width: 24mm;
   min-width: 24mm;
   text-align: center;
-  vertical-align: middle;
+  vertical-align: top;
   font-size: 10pt;
   border-right: 1px solid #000;
 }
@@ -1164,7 +1169,7 @@ body {
   padding-bottom: 0;
 }
 
-.dept-row td {
+.dept-row td.duties-col {
   border-bottom: 1px solid #000 !important;
 }
 
