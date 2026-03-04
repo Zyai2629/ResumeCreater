@@ -1,5 +1,9 @@
 # 変更履歴
 
+### v23b — position-cell の word-break 修正
+- **iPhoneでの改行問題修正**: `.position-cell` から `word-break: break-all` を削除。iPhoneで所属（例：「ホールスタッフ（正社員）として勤務」）が途中で改行される問題を解消。`overflow-wrap: break-word` のみで溢れ時の改行に対応
+- **Service Worker**: キャッシュバージョンを v23b に更新
+
 ### v23 — 職務経歴書の行レベル分割（ページまたぎ対応）
 - **行レベル分割**: 1社の業務内容がページの安全領域を超えた場合、`<li>` / `detail-section` 単位で分割し、超過分を続きページに移動。従来のcareer-block丸ごと移動による大きな空白を解消
 - **続きブロック（`career-block-continuation`）**: 空の `period-col` + `duties-col` のテーブル構造で続きを描画。period-header・企業情報行は元ページに残る
