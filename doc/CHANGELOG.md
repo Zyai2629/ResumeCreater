@@ -1,8 +1,8 @@
 # 変更履歴
 
-### v23c — position-cell の CJK 改行制御修正
-- **iPhoneでの改行問題修正**: `.position-cell` に `word-break: keep-all` を追加。CJKテキストの任意位置での改行を禁止し、列幅(28mm)とフォントメトリクスの差異によるiPhoneでの途中改行を解消。`overflow-wrap: break-word` と併用で本当の溢れ時のみ改行
-- **Service Worker**: キャッシュバージョンを v23c に更新
+### v23d — position-cell の改行問題根本修正
+- **iPhoneでの改行問題修正**: `.position-cell` の `overflow-wrap: break-word` を削除し、左右paddingを6px→2pxに縮小。実質コンテンツ幅が約27mmに拡大され、「ホールスタッフ」（10pt≈7×3.5mm=24.5mm）が十分に収まる。`word-break: keep-all` でCJK文字間の改行も禁止
+- **Service Worker**: キャッシュバージョンを v23d に更新
 
 ### v23 — 職務経歴書の行レベル分割（ページまたぎ対応）
 - **行レベル分割**: 1社の業務内容がページの安全領域を超えた場合、`<li>` / `detail-section` 単位で分割し、超過分を続きページに移動。従来のcareer-block丸ごと移動による大きな空白を解消

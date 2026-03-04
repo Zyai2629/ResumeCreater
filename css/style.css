@@ -1145,8 +1145,8 @@ body {
   border-bottom: 1px solid #000;
   text-align: center;
   font-size: 10pt;
+  padding: 4px 2px;
   word-break: keep-all;
-  overflow-wrap: break-word;
 }
 
 /* 期間列（career-content-table内） */
